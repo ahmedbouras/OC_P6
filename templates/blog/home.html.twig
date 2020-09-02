@@ -20,7 +20,9 @@
         <div class="row justify-content-center">
         {% for trick in tricks %}
             <div class="card col-2">
-                <img style="height: 200px; width: 100%; display: block;" src="{{ trick.defaultImage }}" alt="Card image">
+                <a href="{{ path('trick_show', {title: trick.title}) }}">
+                    <img style="height: 200px; width: 100%; display: block;" src="{{ trick.defaultImage }}" alt="Card image">
+                </a>
                 <div class="card-body row">
                     <h3 class="w-75">{{ trick.title }}</h3>
                     <div class="w-25">

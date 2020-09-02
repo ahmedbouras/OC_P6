@@ -18,4 +18,15 @@ class BlogController extends AbstractController
             'tricks' => $tricks
         ]);
     }
+
+    /**
+     * @Route("/tricks/{title}", name="trick_show")
+     */
+    public function trick(TrickRepository $trickRepository, $title)
+    {
+        $trick = $trickRepository->findOneBy(['title' => $title]);
+        return $this->render('blog/trick.html.twig', [
+            'trick' => $trick
+        ]);
+    }
 }

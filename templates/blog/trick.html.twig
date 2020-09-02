@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} | {{ trick.title }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/trick.css') }}">
+{% endblock %}
+
+{% block body %}
+<h1>{{ trick.title }}</h1>
+<p>{{ trick.content }}</p>
+{% endblock %}
