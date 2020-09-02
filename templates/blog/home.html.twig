@@ -24,7 +24,7 @@
                     <img style="height: 200px; width: 100%; display: block;" src="{{ trick.defaultImage }}" alt="Card image">
                 </a>
                 <div class="card-body row">
-                    <h3 class="w-75">{{ trick.title }}</h3>
+                    <h3 class="w-75">{{ trick.title | capitalize }}</h3>
                     <div class="w-25">
                         <a href="#" class="card-link"><img height="16px" src="{{ asset('images/icones/edit.png') }}" alt=""></a>
                         <a href="#" class="card-link"><img height="18px" src="{{ asset('images/icones/delete.png') }}" alt=""></a>

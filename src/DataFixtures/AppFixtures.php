@@ -52,7 +52,7 @@ class AppFixtures extends Fixture
             $trick = new Trick();
             $trick->addCategory($category)
                   ->setUser($user)
-                  ->setTitle($tricksName[$j])
+                  ->setTitle(strtolower($tricksName[$j]))
                   ->setDefaultImage('images/default-image.jpg')
                   ->setcontent($this->tricks[$tricksName[$j]])
                   ->setCreatedAt(new \DateTime())
