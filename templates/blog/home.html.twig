@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+{% endblock %}
+
+{% block body %}
+
+<div id="hero">
+    <div id="hero-text">
+        <h1 id="hero-title">SnowTricks</h1>
+        <h2><em>La communauté qui partage sa passion</em></h2>
+    </div>
+    <a href="#list-tricks"><img id="btn-down" src="{{ asset('images/icones/down.png') }}" alt=""></a>
+</div>
+
+<section id="list-tricks">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+        {% for trick in tricks %}
+            <div class="card col-2">
+                <img style="height: 200px; width: 100%; display: block;" src="{{ trick.defaultImage }}" alt="Card image">
+                <div class="card-body row">
+                    <h3 class="w-75">{{ trick.title }}</h3>
+                    <div class="w-25">
+                        <a href="#" class="card-link"><img height="16px" src="{{ asset('images/icones/edit.png') }}" alt=""></a>
+                        <a href="#" class="card-link"><img height="18px" src="{{ asset('images/icones/delete.png') }}" alt=""></a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+
+        <div class="row justify-content-center">
+            <button type="button" class="btn btn-secondary btn-lg">Voir plus</button>
+        </div>
+    </div>
+
+    <a href="#list-tricks"><img id="btn-up" src="{{ asset('images/icones/up.png') }}" alt=""></a>
+</section>
+
+{% endblock %}
