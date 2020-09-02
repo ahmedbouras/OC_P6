@@ -23,3 +23,19 @@
     bottom: 5%;
     right: 2%;
 }
+
+#list-tricks {
+    padding-top: 150px;
+    padding-bottom: 50px;
+}
+
+.card {
+    padding: 0;
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+#btn-up {
+    position: absolute;
+    right: 2%;
+}
