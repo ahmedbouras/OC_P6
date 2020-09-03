@@ -6,6 +6,39 @@
 {% endblock %}
 
 {% block body %}
-<h1>{{ trick.title | capitalize}}</h1>
-<p>{{ trick.content }}</p>
+<div class="container">
+    <div id="main-image">
+        <div id="image-trick">
+            <h1 id="title-trick">{{ trick.title | capitalize}}</h1>
+        </div>
+    </div>
+
+    <div id="images-videos">
+
+    </div>
+
+    <section id="content-trick">
+        <div>
+            <p>{{ trick.content }}</p>
+        </div>
+        <div id="informations-tricks">
+            <p>Créé le : {{ trick.createdAt | date("m/d/Y") }}</p>
+            <p>Mis à jour le {{ trick.updatedAt | date("m/d/Y") }}</p>
+            <p>Catégories 
+            {% for category in trick.categories %}
+                <span class="badge badge-pill badge-secondary">{{ category.name }}</span>
+            {% endfor %}
+            </p>
+        </div>
+        <div>
+            <!-- TO DO : CREATION DU FORMULAIRE -->
+        </div>
+        <div>
+            {% for comment in trick.comments %}
+                <p> {{ comment.comment }} </p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
 {% endblock %}
