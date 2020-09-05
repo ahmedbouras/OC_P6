@@ -32,8 +32,10 @@
 
     <div class="row bloc-infos mt-5">
         <div class="col-8 offset-2 d-flex justify-content-around">
-            <p>Date de création : {{ trick.createdAt | date("m/d/Y") }}</p>
-            <p>Date de modification : {{ trick.updatedAt | date("m/d/Y") }}</p>
+            <p>Date de création : {{ trick.createdAt | date("d/m/Y") }}</p>
+            {% if trick.createdAt != trick.updatedAt %}
+                <p>Date de modification : {{ trick.updatedAt | date("d/m/Y") }}</p>
+            {% endif %}
             <p>Catégories : 
             {% for category in trick.categories %}
                 <span class="badge badge-pill badge-secondary">{{ category.name }}</span>
@@ -53,7 +55,7 @@
 
     <div class="row bloc-comments mt-5 mb-5">
         <div class="col-8 offset-2">
-            {% for comment in trick.comments %}
+            {% for comment in trick.comments | reverse(true) %}
             <div class="d-flex align-items-center">
                 <img class="avatar-img mr-4" height="40px" src="{{ asset('uploads/avatar-default.png') }}" alt="">
                 <p class="comment p-2">{{ comment.comment }}</p>
