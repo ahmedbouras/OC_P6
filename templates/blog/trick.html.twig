@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} | {{ trick.title | capitalize}}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/trick.css') }}">
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div class="row">
+        <div class="bloc-title m-0 p-0 col-12">
+            <img src="{{ asset('images/default-image.jpg')}}" alt="">
+            <h1>{{ trick.title | capitalize}}</h1>
+        </div>
+    </div>
+
+    <div class="row bloc-img-vids">
+        <div class="col-12">
+        
+        </div>
+    </div>
+
+    <div class="row bloc-content mt-5">
+        <div class="col-10 offset-1">
+            <p>{{ trick.content }} Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe enim odio eum! Recusandae blanditiis est eveniet molestias accusamus quidem, enim atque officiis porro dolorum repudiandae. Dignissimos sint soluta quae earum!
+            </p>
+            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Explicabo eveniet non iste, quis, soluta consectetur eaque deserunt voluptas earum assumenda numquam laudantium qui maiores quaerat! Mollitia quae ut accusantium facere?Sapiente, maiores enim libero saepe nihil non nam doloribus. Odit, similique aut. Architecto explicabo in rerum, recusandae aperiam ex aut necessitatibus non mollitia laborum quae voluptate corporis molestiae odio dolores.</p>
+        </div>
+    </div>
+
+    <div class="row bloc-infos mt-5">
+        <div class="col-8 offset-2 d-flex justify-content-around">
+            <p>Date de création : {{ trick.createdAt | date("d/m/Y") }}</p>
+            {% if trick.createdAt != trick.updatedAt %}
+                <p>Date de modification : {{ trick.updatedAt | date("d/m/Y") }}</p>
+            {% endif %}
+            <p>Catégories : 
+            {% for category in trick.categories %}
+                <span class="badge badge-pill badge-secondary">{{ category.name }}</span>
+            {% endfor %}
+            </p>
+        </div>
+    </div>
+    <hr>
+    
+    <div class="row bloc-form mt-5 mb-5">
+        <form class="col-8 offset-2 d-flex justify-content-center">
+            <input type="text">
+            <button type="submit">Laisser un commentaire</button>
+        </form>
+    </div>
+    <hr>
+
+    <div class="row bloc-comments mt-5 mb-5">
+        <div class="col-8 offset-2">
+            {% for comment in trick.comments | reverse(true) %}
+            <div class="d-flex align-items-center">
+                <div class="row d-flex justify-content-center text-center mr-4">
+                    <img class="avatar-img" height="40px" src="{{ asset(comment.user.avatar) }}" alt="">
+                    <p>{{ comment.user.username }}</p>
+                </div>
+                <p class="comment p-2">{{ comment.comment }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
