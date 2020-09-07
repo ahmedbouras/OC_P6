@@ -39,7 +39,7 @@ class AppFixtures extends Fixture
         $user->setUsername('admin')
              ->setPassword($password)
              ->setEmail('ab.perso@outlook.fr')
-             ->setAvatar('uploads/default-avatar.png')
+             ->setAvatar('uploads/avatar-default.png')
              ->setIsValid(true);
         $manager->persist($user);
 
