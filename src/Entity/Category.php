@@ -24,14 +24,9 @@ class Category
      */
     private $name;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Trick::class, mappedBy="categories")
-     */
-    private $tricks;
-
     public function __construct()
     {
-        $this->tricks = new ArrayCollection();
+        
     }
 
     public function getId(): ?int
@@ -47,34 +42,6 @@ class Category
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Trick[]
-     */
-    public function getTricks(): Collection
-    {
-        return $this->tricks;
-    }
-
-    public function addTrick(Trick $trick): self
-    {
-        if (!$this->tricks->contains($trick)) {
-            $this->tricks[] = $trick;
-            $trick->addCategory($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTrick(Trick $trick): self
-    {
-        if ($this->tricks->contains($trick)) {
-            $this->tricks->removeElement($trick);
-            $trick->removeCategory($this);
-        }
 
         return $this;
     }
