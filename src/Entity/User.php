@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -22,6 +23,15 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\NotNull
+     * @Assert\NotBlank
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 30,
+     *      minMessage = "Votre nom d'utilisateur doit contenir {{ limit }} caractères minimum.",
+     *      maxMessage = "Votre nom d'utilisateur doit être de {{ limit }} caractères maximum.",
+     *      allowEmptyString = false
+     * )
      */
     private $username;
 
@@ -33,16 +43,34 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Assert\NotNull
+     * @Assert\NotBlank
+     * @Assert\Length(
+     *      min = 6,
+     *      max = 4096,
+     *      minMessage = "Votre mot de passe doit contenir {{ limit }} caractères minimum.",
+     *      maxMessage = "Votre mot de passe doit être de {{ limit }} caractères maximum.",
+     *      allowEmptyString = false
+     * )
      */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotNull
+     * @Assert\NotBlank
+     * @Assert\Regex("#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$#", message="Veuillez saisir un email valide.")
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\File(
+     *     maxSize = "1024k",
+     *     maxSizeMessage = "Votre image ne doit pas dépasser les {{ limit }}ko.",
+     *     mimeTypes = {"image/jpeg", "image/jpg", "image/png"},
+     *     mimeTypesMessage = "Extension acceptées : jpeg jpg png."
+     * )
      */
     private $avatar;
 
