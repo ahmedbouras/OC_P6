@@ -6,6 +6,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -30,11 +31,30 @@ class RegistrationController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $uploadedAvatar = $form->get('avatar')->getData();
             $user = $form->getData();
             $user->setPassword($this->passwordEncoder->encodePassword(
                 $user,
                 $user->getPassword()
             ));
+
+            if ($uploadedAvatar) {
+                $fileNameAvatar = uniqid("uploads/", true) . '.' .$uploadedAvatar->guessExtension();
+
+                try {
+                    $uploadedAvatar->move(
+                        $this->getParameter('images_directory'),
+                        $fileNameAvatar
+                    );
+                }
+                catch (FileException $e) {
+
+                }
+            } else {
+                $fileNameAvatar = 'uploads/avatar-default.png';
+            }
+
+            $user->setAvatar($fileNameAvatar);
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
