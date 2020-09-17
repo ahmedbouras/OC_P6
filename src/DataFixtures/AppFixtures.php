@@ -39,8 +39,7 @@ class AppFixtures extends Fixture
         $user->setUsername('admin')
              ->setPassword($password)
              ->setEmail('ab.perso@outlook.fr')
-             ->setAvatar('uploads/avatar-default.png')
-             ->setIsValid(true);
+             ->setAvatar('uploads/avatar-default.png');
         $manager->persist($user);
 
         $category = new Category();
@@ -50,7 +49,7 @@ class AppFixtures extends Fixture
         $tricksName = array_keys($this->tricks);
         for ($j = 0; $j < 10; $j++) {
             $trick = new Trick();
-            $trick->addCategory($category)
+            $trick->setCategory($category)
                   ->setUser($user)
                   ->setTitle(strtolower($tricksName[$j]))
                   ->setDefaultImage('images/default-image.jpg')

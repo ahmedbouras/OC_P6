@@ -20,7 +20,7 @@ class BlogController extends AbstractController
     }
 
     /**
-     * @Route("/tricks/{title}", name="trick_show")
+     * @Route("/trick/{title}", name="trick_show")
      */
     public function trick(TrickRepository $trickRepository, $title)
     {

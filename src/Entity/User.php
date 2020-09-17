@@ -47,11 +47,6 @@ class User implements UserInterface
     private $avatar;
 
     /**
-     * @ORM\Column(type="boolean")
-     */
-    private $isValid;
-
-    /**
      * @ORM\OneToMany(targetEntity=Trick::class, mappedBy="user", orphanRemoval=true)
      */
     private $tricks;
@@ -160,18 +155,6 @@ class User implements UserInterface
     public function setAvatar(string $avatar): self
     {
         $this->avatar = $avatar;
-
-        return $this;
-    }
-
-    public function getIsValid(): ?bool
-    {
-        return $this->isValid;
-    }
-
-    public function setIsValid(bool $isValid): self
-    {
-        $this->isValid = $isValid;
 
         return $this;
     }

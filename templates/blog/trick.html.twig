@@ -36,10 +36,7 @@
             {% if trick.createdAt != trick.updatedAt %}
                 <p>Date de modification : {{ trick.updatedAt | date("d/m/Y") }}</p>
             {% endif %}
-            <p>Catégories : 
-            {% for category in trick.categories %}
-                <span class="badge badge-pill badge-secondary">{{ category.name }}</span>
-            {% endfor %}
+            <p>Catégories : <span class="badge badge-pill badge-secondary">{{ trick.category.name }}</span>
             </p>
         </div>
     </div>
