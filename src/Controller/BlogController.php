@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Form\RegistrationFormType;
 use App\Repository\TrickRepository;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,6 +29,20 @@ class BlogController extends AbstractController
         $trick = $trickRepository->findOneBy(['title' => $title]);
         return $this->render('blog/trick.html.twig', [
             'trick' => $trick
+        ]);
+    }
+
+    /**
+     * @Route("/inscription", name="app_register")
+     */
+    public function register()
+    {
+        $user = new User();
+
+        $form = $this->createForm(RegistrationFormType::class, $user);
+
+        return $this->render('registration/register.html.twig', [
+            'registrationForm' => $form->createView(),
         ]);
     }
 }
