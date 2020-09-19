@@ -7,8 +7,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 
@@ -24,7 +26,7 @@ class RegistrationController extends AbstractController
     /**
      * @Route("/inscription", name="app_register")
      */
-    public function register(Request $request)
+    public function register(Request $request, MailerInterface $mailer)
     {
         $user = new User();
 
@@ -62,6 +64,17 @@ class RegistrationController extends AbstractController
             $em->persist($user);
             $em->flush();
 
+            $email = (new TemplatedEmail())
+                ->from('no-reply@snowtricks.com')
+                ->to($user->getEmail())
+                ->subject('Confirmation Email')
+                ->htmlTemplate('registration/activation.html.twig')
+                ->context([
+                    'token' => $user->getActivationToken(),
+                ]);
+
+            $mailer->send($email);
+
             return $this->redirectToRoute('home');
         }
 
@@ -87,7 +100,7 @@ class RegistrationController extends AbstractController
         $em->persist($user);
         $em->flush();
 
-        $this->addFlash('message', 'Votre compte est maintenant activé !');
+        $this->addFlash('success', 'Votre compte est maintenant activé !');
         
         return $this->redirectToRoute('home');
     }
