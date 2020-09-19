@@ -75,6 +75,7 @@ class RegistrationController extends AbstractController
 
             $mailer->send($email);
 
+            $this->addFlash('success', 'Confirmez votre compte en cliquant sur le lien envoyé par mail.');
             return $this->redirectToRoute('home');
         }
 
@@ -102,6 +103,6 @@ class RegistrationController extends AbstractController
 
         $this->addFlash('success', 'Votre compte est maintenant activé !');
         
-        return $this->redirectToRoute('home');
+        return $this->redirectToRoute('app_login');
     }
 }
