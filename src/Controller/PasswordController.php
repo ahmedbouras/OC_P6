@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class PasswordController extends AbstractController
 {
@@ -65,13 +66,34 @@ class PasswordController extends AbstractController
     /**
      * @Route("/modification-mot-de-passe/{token}", name="app_reset_pass")
      */
-    public function reset(Request $request, UserRepository $userRepository)
+    public function reset(Request $request, UserRepository $userRepository, UserPasswordEncoderInterface $passwordEncoder, $token)
     {
+        $user = $userRepository->findOneBy(['resetToken' => $token]);
+
+        if (!$user) {
+            $this->addFlash('danger', 'Token inexistant.');
+            return $this->redirectToRoute('app_forgot_pass');
+        }
+
         $form = $this->createForm(ResetPassType::class);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('email')->getData() != $user->getEmail()) {
+                $this->addFlash('danger', 'Veuillez saisir la bonne adresse email.');
+                return $this->redirectToRoute('app_reset_pass', ['token' => $token]);
+            }
 
+            $newPassword = $form->get('password')->getData();
+
+            $user->setResetToken(null)
+                 ->setPassword($passwordEncoder->encodePassword($user, $newPassword));
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            $em->flush();
+
+            return $this->redirectToRoute('home');
         }
 
         return $this->render('password/resetPass.html.twig', [
