@@ -5,6 +5,8 @@
     <link rel="stylesheet" href="{{ asset('css/trick.css') }}">
 {% endblock %}
 
+{% form_theme commentForm 'bootstrap_4_layout.html.twig' %}
+
 {% block body %}
 
 <div class="container">
@@ -42,12 +44,14 @@
     </div>
     <hr>
     
+    {{ form_start(commentForm) }}
     <div class="row bloc-form mt-5 mb-5">
-        <form class="col-8 offset-2 d-flex justify-content-center">
-            <input type="text">
+        <div class="col-8 offset-2 d-flex justify-content-center">
+            {{ form_row(commentForm.comment) }}
             <button type="submit">Laisser un commentaire</button>
-        </form>
+        </div>
     </div>
+    {{ form_end(commentForm) }}
     <hr>
 
     <div class="row bloc-comments mt-5 mb-5">
