@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\ResetPassType;
 use App\Form\ForgotPassType;
 use App\Repository\UserRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -64,8 +65,17 @@ class PasswordController extends AbstractController
     /**
      * @Route("/modification-mot-de-passe/{token}", name="app_reset_pass")
      */
-    public function reset()
+    public function reset(Request $request, UserRepository $userRepository)
     {
+        $form = $this->createForm(ResetPassType::class);
 
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+        }
+
+        return $this->render('password/resetPass.html.twig', [
+            'resetForm' => $form->createView(),
+        ]);
     }
 }

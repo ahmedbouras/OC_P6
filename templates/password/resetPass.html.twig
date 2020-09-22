@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} | Réinitialisation mot de passe {% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/formFrame.css') }}">
+{% endblock %}
+
+{% form_theme resetForm 'bootstrap_4_layout.html.twig' %}
+
+{% block body %}
+
+<div class="container mt-5 mb-5 container-forgot">
+
+    <div class="row mb-5 text-center">
+        <h1 class="col-12">Réinitialisation du mot de passe</h1>
+    </div>
+  
+    {{ form_start(resetForm) }}
+    <div class="row d-flex justify-content-center text-center">
+        <div class="bloc-fields col-6 pt-4 pb-4">
+            
+            <div class="row">
+                <div class="form-group col-6 offset-3">
+                    {{ form_row(resetForm.email, {
+                        label: 'Email',
+                    }) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-6 offset-3">
+                    {{ form_row(resetForm.password, {
+                        label: 'Nouveau mot de passe',
+                    }) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-secondary">Réinitialiser</button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    {{ form_end(resetForm) }}
+</div>
+    
+{% endblock %}
