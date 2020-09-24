@@ -16,17 +16,10 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class RegistrationController extends AbstractController
 {
-    private $passwordEncoder;
-
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
-    {
-        $this->passwordEncoder = $passwordEncoder;
-    }
-
     /**
      * @Route("/inscription", name="app_register")
      */
-    public function register(Request $request, MailerInterface $mailer)
+    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, MailerInterface $mailer)
     {
         $user = new User();
 
@@ -36,7 +29,7 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedAvatar = $form->get('avatar')->getData();
             $user = $form->getData();
-            $user->setPassword($this->passwordEncoder->encodePassword(
+            $user->setPassword($passwordEncoder->encodePassword(
                 $user,
                 $user->getPassword()
             ));
