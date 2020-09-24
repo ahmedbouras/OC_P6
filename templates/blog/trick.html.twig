@@ -5,6 +5,8 @@
     <link rel="stylesheet" href="{{ asset('css/trick.css') }}">
 {% endblock %}
 
+{% form_theme commentForm 'bootstrap_4_layout.html.twig' %}
+
 {% block body %}
 
 <div class="container">
@@ -42,23 +44,29 @@
     </div>
     <hr>
     
-    <div class="row bloc-form mt-5 mb-5">
-        <form class="col-8 offset-2 d-flex justify-content-center">
-            <input type="text">
-            <button type="submit">Laisser un commentaire</button>
-        </form>
-    </div>
-    <hr>
+    {% if app.user %}
+        {{ form_start(commentForm) }}
+        <div class="row d-flex justify-content-center align-items-center bloc-form mt-5 mb-5">
+            <div class="col-5">
+                {{ form_widget(commentForm.comment) }}
+            </div>
+            <div>
+                <button type="submit" class="btn btn-secondary">Laisser un commentaire</button>
+            </div>
+        </div>
+        {{ form_end(commentForm) }}
+        <hr>
+    {% endif %}
 
     <div class="row bloc-comments mt-5 mb-5">
         <div class="col-8 offset-2">
             {% for comment in trick.comments | reverse(true) %}
             <div class="d-flex align-items-center">
-                <div class="row d-flex justify-content-center text-center mr-4">
+                <div class="row d-flex justify-content-center text-center mr-4 w-25">
                     <img class="avatar-img" height="40px" src="{{ asset(comment.user.avatar) }}" alt="">
-                    <p>{{ comment.user.username }}</p>
+                    <p class="col-12">{{ comment.user.username }}</p>
                 </div>
-                <p class="comment p-2">{{ comment.comment }}</p>
+                <p class="comment p-2 w-75">{{ comment.comment }}</p>
             </div>
             {% endfor %}
         </div>
