@@ -3,9 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Entity\Trick;
 use App\Form\CommentType;
+use App\Form\TrickType;
 use App\Repository\TrickRepository;
-use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,9 +25,23 @@ class BlogController extends AbstractController
     }
 
     /**
+     * @Route("/trick/creation", name="trick_create")
+     */
+    public function create(Request $request)
+    {
+        $trick = new Trick();
+
+        $form = $this->createForm(TrickType::class, $trick);
+
+        return $this->render('blog/trick_create.html.twig', [
+            'trickCreationForm' => $form->createView(),
+        ]);
+    }
+
+    /**
      * @Route("/trick/{title}", name="trick_show")
      */
-    public function trick(Request $request, UserRepository $userRepository, TrickRepository $trickRepository, $title)
+    public function trick(Request $request, TrickRepository $trickRepository, $title)
     {
         $trick = $trickRepository->findOneBy(['title' => $title]);
 
