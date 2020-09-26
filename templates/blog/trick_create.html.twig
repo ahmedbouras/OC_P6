@@ -1,3 +1,59 @@
-{{ form_start(trickCreationForm) }}
+{% extends 'base.html.twig' %}
 
-{{ form_end(trickCreationForm) }}
+{% block title %}{{ parent() }} | Creation d'un trick{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/newTrick.css') }}">
+{% endblock %}
+
+{% form_theme trickCreationForm 'bootstrap_4_layout.html.twig' %}
+
+{% block body %}
+
+<div class="container">
+
+    {{ form_start(trickCreationForm) }}
+    <div class="row">
+        <div class="bloc-title m-0 p-0 col-12">
+            <img src="{{ asset('images/default-image.jpg')}}" alt="">
+            <h1>{{ form_widget(trickCreationForm.title, {
+                'attr': {'placeholder': 'Nom du Trick'},
+            }) }}
+            </h1>
+            <small>image par défaut, si aucune image ajoutée.</small>
+        </div>
+        <p>{{ form_errors(trickCreationForm.title) }}</p>
+    </div>
+
+    <div class="row bloc-img-vids">
+        <div class="col-12">
+        
+        </div>
+    </div>
+
+    <div class="row bloc-content mt-5">
+        <div class="col-8 offset-2">
+            {{ form_widget(trickCreationForm.content, {
+                'attr': {'placeholder': 'Description du Trick'},
+            }) }}
+            {{ form_errors(trickCreationForm.content) }}
+        </div>
+    </div>
+
+    <div class="row bloc-category mt-5">
+        <div class="col-2 offset-2">
+            {{ form_widget(trickCreationForm.category) }}
+            {{ form_errors(trickCreationForm.category) }}
+        </div>
+    </div>
+
+    <div class="row bloc-button mt-5 mb-5">
+        <div class="col-8 offset-2 d-flex justify-content-end">
+            <button type="submit" class="btn btn-secondary">Créer</button>
+        </div>
+    </div>
+
+    {{ form_end(trickCreationForm) }}
+
+</div>
+
+{% endblock %}
