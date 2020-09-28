@@ -62,6 +62,38 @@ class BlogController extends AbstractController
     }
 
     /**
+     * @Route("/trick/modification/{id}", name="trick_update")
+     */
+    public function update(Request $request, Trick $trick)
+    {
+        $form = $this->createForm(TrickType::class, $trick);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $title = $form->get('title')->getData();
+            $trick->setTitle(strtolower($title))
+                  ->setUpdatedAt(new \DateTime());
+
+            try {
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($trick);
+                $em->flush();
+
+                $this->addFlash('success', 'Votre Trick a bien été modifié !');
+                return $this->redirectToRoute('home');
+            } catch (\Exception $e) {
+                $this->addFlash('danger', 'Une erreur s\'est produite durant l\'enregistrement en base de donnée.');
+                return $this->redirectToRoute('home');
+            }
+        }
+
+        return $this->render('blog/trick_modify.html.twig', [
+            'trick' => $trick,
+            'trickEditForm' => $form->createView(),
+        ]);
+    }
+
+    /**
      * @Route("/trick/{title}", name="trick_show")
      */
     public function trick(Request $request, TrickRepository $trickRepository, $title)
