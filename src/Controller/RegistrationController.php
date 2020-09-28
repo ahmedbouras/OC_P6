@@ -44,7 +44,8 @@ class RegistrationController extends AbstractController
                     );
                 }
                 catch (FileException $e) {
-
+                    $this->addFlash('danger', 'Une erreur s\'est prroduite lors du chargment du fichier : ' . $e);
+                    return $this->redirectToRoute('app_register');
                 }
             } else {
                 $fileNameAvatar = 'uploads/avatar-default.png';
@@ -53,9 +54,14 @@ class RegistrationController extends AbstractController
             $user->setAvatar($fileNameAvatar);
             $user->setActivationToken(md5(random_bytes(5)));
 
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($user);
-            $em->flush();
+            try {
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($user);
+                $em->flush();
+            } catch(\Exception $e) {
+                $this->addFlash('danger', 'Une erreur s\'est produite durant l\'enregistrement en base de donnée.');
+                return $this->redirectToRoute('app_register');
+            }
 
             $email = (new TemplatedEmail())
                 ->from('no-reply@snowtricks.com')

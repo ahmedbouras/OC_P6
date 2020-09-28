@@ -32,9 +32,6 @@ class BlogController extends AbstractController
     {
         $trick = new Trick();
 
-        // The line below is only to test the trick creation with a user
-        $user = $this->getDoctrine()->getRepository(User::class)->find(38);
-
         $form = $this->createForm(TrickType::class, $trick);
 
         $form->handleRequest($request);
@@ -44,7 +41,7 @@ class BlogController extends AbstractController
                   ->setCreatedAt(new \DateTime())
                   ->setUpdatedAt(new \DateTime())
                   ->setDefaultImage('images/default-image.jpg')
-                  ->setUser($user);
+                  ->setUser($this->getUser());
 
             try {
                 $em = $this->getDoctrine()->getManager();
@@ -76,8 +73,6 @@ class BlogController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            
-
             $comment->setComment($form->get('comment')->getData())
                     ->setCreatedAt(new \DateTime)
                     ->setTrick($trick)

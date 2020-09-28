@@ -8,9 +8,6 @@
 {% form_theme registrationForm 'bootstrap_4_layout.html.twig' %}
 
 {% block body %}
-{% for flashError in app.flashes('verify_email_error') %}
-    <div class="alert alert-danger" role="alert">{{ flashError }}</div>
-{% endfor %}
 
 <div class="container mt-5 mb-5">
 
