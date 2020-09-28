@@ -6,6 +6,10 @@ html {
     scroll-behavior: smooth;    
 }
 
+.alert {
+    margin-bottom: 0;
+}
+
 footer {
     color: white;
     background-color: #373a3c;

@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Entity\Trick;
+use App\Entity\User;
 use App\Form\CommentType;
+use App\Form\TrickType;
 use App\Repository\TrickRepository;
-use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,9 +26,45 @@ class BlogController extends AbstractController
     }
 
     /**
+     * @Route("/trick/creation", name="trick_create")
+     */
+    public function create(Request $request)
+    {
+        $trick = new Trick();
+
+        $form = $this->createForm(TrickType::class, $trick);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $title = $form->get('title')->getData();
+            $trick->setTitle(strtolower($title))
+                  ->setCreatedAt(new \DateTime())
+                  ->setUpdatedAt(new \DateTime())
+                  ->setDefaultImage('images/default-image.jpg')
+                  ->setUser($this->getUser());
+
+            try {
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($trick);
+                $em->flush();
+
+                $this->addFlash('success', 'Votre Trick a bien été enregistré !');
+                return $this->redirectToRoute('home');
+            } catch (\Exception $e) {
+                $this->addFlash('danger', 'Une erreur s\'est produite durant l\'enregistrement en base de donnée.');
+                return $this->redirectToRoute('home');
+            }
+        }
+
+        return $this->render('blog/trick_create.html.twig', [
+            'trickCreationForm' => $form->createView(),
+        ]);
+    }
+
+    /**
      * @Route("/trick/{title}", name="trick_show")
      */
-    public function trick(Request $request, UserRepository $userRepository, TrickRepository $trickRepository, $title)
+    public function trick(Request $request, TrickRepository $trickRepository, $title)
     {
         $trick = $trickRepository->findOneBy(['title' => $title]);
 
@@ -35,8 +73,6 @@ class BlogController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            
-
             $comment->setComment($form->get('comment')->getData())
                     ->setCreatedAt(new \DateTime)
                     ->setTrick($trick)
