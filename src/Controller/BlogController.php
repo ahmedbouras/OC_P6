@@ -94,6 +94,24 @@ class BlogController extends AbstractController
     }
 
     /**
+     * @Route("/trick/suppression/{id}", name="trick_delete")
+     */
+    public function delete(Trick $trick)
+    {
+        try {
+            $em =$this->getDoctrine()->getManager();
+            $em->remove($trick);
+            $em->flush();
+
+            $this->addFlash('success', 'Le trick a bien été supprimé !');
+            return $this->redirectToRoute('home');
+        } catch (\Exception $e) {
+            $this->addFlash('danger', 'Une erreur est survenue lors de la suppression du trick.');
+            return $this->redirectToRoute('home');
+        }
+    }
+
+    /**
      * @Route("/trick/{title}", name="trick_show")
      */
     public function trick(Request $request, TrickRepository $trickRepository, $title)

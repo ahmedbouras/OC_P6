@@ -30,6 +30,15 @@
         </div>
     </div>
 
+    <div class="row bloc-infos mt-5">
+        <div class="col-8 offset-2 d-flex">
+            <p class="mr-5">Date de création : {{ trick.createdAt | date("d/m/Y") }}</p>
+            {% if trick.createdAt != trick.updatedAt %}
+                <p>Date de modification : {{ trick.updatedAt | date("d/m/Y") }}</p>
+            {% endif %}
+        </div>
+    </div>
+
     <div class="row bloc-content mt-5">
         <div class="col-8 offset-2">
             {{ form_widget(trickEditForm.content, {
@@ -48,8 +57,8 @@
 
     <div class="row bloc-button mt-5 mb-5">
         <div class="col-8 offset-2 d-flex justify-content-end">
-            <button type="submit" class="btn btn-danger mr-2">Supprimer</button>
-            <a href="{{ path('trick_delete', {id: trick.id}) }}" class="btn btn-secondary">Enregistrer</a>
+            <a href="{{ path('trick_delete', {id: trick.id}) }}" class="btn btn-danger mr-2">Supprimer</a>
+            <button type="submit" class="btn btn-secondary">Enregistrer</button>
         </div>
     </div>
 
