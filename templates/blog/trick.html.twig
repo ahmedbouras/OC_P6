@@ -19,8 +19,12 @@
     </div>
 
     <div class="row bloc-img-vids">
-        <div class="col-12">
-        
+        <div class="col-12 d-flex flex-wrap">
+            {% for video in trick.videos %}
+                <div class="video mr-2">
+                    <iframe src="{{ video.name }}" allowfullscreen></iframe> 
+                </div>
+            {% endfor %}
         </div>
     </div>
 

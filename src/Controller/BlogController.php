@@ -48,8 +48,14 @@ class BlogController extends AbstractController
                   ->setUser($this->getUser());
 
             if ($url) {
+                if (preg_match('#youtube#', $url)) {
+                    $splitedUrl = preg_split('#&#', $url);
+                    $cleanedUrl = preg_replace('#watch\?v=#', 'embed/', $splitedUrl[0]);
+                } elseif (preg_match('#dailymotion#', $url)) {
+                    $cleanedUrl = preg_replace('#video#', 'embed/video', $url);
+                }
                 $video->setTrick($trick)
-                  ->setName($url);
+                      ->setName($cleanedUrl);
             }
 
             try {
