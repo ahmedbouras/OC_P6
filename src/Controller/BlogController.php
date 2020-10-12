@@ -82,17 +82,33 @@ class BlogController extends AbstractController
      */
     public function update(Request $request, Trick $trick)
     {
+        $video = new Video();
+
         $form = $this->createForm(TrickType::class, $trick);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $title = $form->get('title')->getData();
+            $url = $form->get('video')->getData();
             $trick->setTitle(strtolower($title))
                   ->setUpdatedAt(new \DateTime());
+
+            if ($url) {
+                if (preg_match('#youtube#', $url)) {
+                    $splitedUrl = preg_split('#&#', $url);
+                    $cleanedUrl = preg_replace('#watch\?v=#', 'embed/', $splitedUrl[0]);
+                } elseif (preg_match('#dailymotion#', $url)) {
+                    $cleanedUrl = preg_replace('#video#', 'embed/video', $url);
+                }
+            }
+
+            $video->setTrick($trick)
+                  ->setName($cleanedUrl);
 
             try {
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($trick);
+                $em->persist($video);
                 $em->flush();
 
                 $this->addFlash('success', 'Votre Trick a bien été modifié !');
