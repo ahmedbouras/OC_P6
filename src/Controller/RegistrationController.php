@@ -42,8 +42,7 @@ class RegistrationController extends AbstractController
                         $this->getParameter('images_directory'),
                         $fileNameAvatar
                     );
-                }
-                catch (FileException $e) {
+                } catch (FileException $e) {
                     $this->addFlash('danger', 'Une erreur s\'est prroduite lors du chargment du fichier : ' . $e);
                     return $this->redirectToRoute('app_register');
                 }
