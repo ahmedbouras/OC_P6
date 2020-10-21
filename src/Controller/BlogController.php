@@ -32,6 +32,8 @@ class BlogController extends AbstractController
      */
     public function create(Request $request)
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $trick = new Trick();
         $video = new Video();
         $image = new Image();
@@ -104,6 +106,8 @@ class BlogController extends AbstractController
      */
     public function update(Request $request, Trick $trick)
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $video = new Video();
         $image = new Image();
 
@@ -172,6 +176,8 @@ class BlogController extends AbstractController
      */
     public function delete(Trick $trick)
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         try {
             $em =$this->getDoctrine()->getManager();
             $em->remove($trick);

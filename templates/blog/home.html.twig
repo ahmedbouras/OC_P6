@@ -28,8 +28,10 @@
                         <h3>{{ trick.title | capitalize }}</h3>
                     </a>
                     <div class="w-25">
+                    {% if app.user %}
                         <a href="{{ path('trick_update', {id: trick.id}) }}" class="card-link"><img height="16px" src="{{ asset('images/icones/edit.png') }}" alt=""></a>
                         <a href="{{ path('trick_delete', {id: trick.id}) }}" class="card-link"><img height="18px" src="{{ asset('images/icones/delete.png') }}" alt=""></a>
+                    {% endif %}
                     </div>
                 </div>
             </div>
