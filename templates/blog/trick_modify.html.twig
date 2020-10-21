@@ -25,10 +25,17 @@
     </div>
 
     <div class="row bloc-img-vids mt-2">
-        <div class="col-12">
+        <div class="col-12 d-flex flex-wrap">
+            {% for image in trick.images %}
+                <div class="mr-2">
+                    <a href="{{ image.name }}" target="_blank">
+                        <img src="{{ image.name }}" alt="" style="height: 154px; width: 231px;">
+                    </a>
+                </div>
+            {% endfor %}
             {% for video in trick.videos %}
                 <div class="video mr-2">
-                    <iframe src="{{ video.name }}" allowfullscreen></iframe> 
+                    <iframe src="{{ video.name }}" allow="fullscreen" style="border:none; height:150px; width:230px;"></iframe> 
                 </div>
             {% endfor %}
         </div>

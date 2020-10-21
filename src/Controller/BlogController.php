@@ -5,12 +5,9 @@ namespace App\Controller;
 use App\Entity\Comment;
 use App\Entity\Image;
 use App\Entity\Trick;
-use App\Entity\User;
 use App\Entity\Video;
 use App\Form\CommentType;
 use App\Form\TrickType;
-use App\Form\VideoType;
-use App\Repository\ImageRepository;
 use App\Repository\TrickRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -66,11 +63,11 @@ class BlogController extends AbstractController
             }
 
             if ($imageUploaded) {
-                $imageTrick = uniqid("uploads/", true) . '.' .$imageUploaded->guessExtension();
+                $imageTrick = uniqid("/uploads/", true) . '.' .$imageUploaded->guessExtension();
 
                 try {
                     $imageUploaded->move(
-                        $this->getParameter('trick_directory'),
+                        $this->getParameter('images_directory'),
                         $imageTrick
                     );
                 } catch (FileException $e) {
@@ -108,16 +105,20 @@ class BlogController extends AbstractController
     public function update(Request $request, Trick $trick)
     {
         $video = new Video();
+        $image = new Image();
 
         $form = $this->createForm(TrickType::class, $trick);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $title = $form->get('title')->getData();
+            $imageUploaded = $form->get('image')->getData();
             $url = $form->get('video')->getData();
+
             $trick->setTitle(strtolower($title))
                   ->setUpdatedAt(new \DateTime());
 
+            // TODO: REFACTORISER EN METHODE POUR EVITER DOUBLON
             if ($url) {
                 if (preg_match('#youtube#', $url)) {
                     $splitedUrl = preg_split('#&#', $url);
@@ -125,15 +126,31 @@ class BlogController extends AbstractController
                 } elseif (preg_match('#dailymotion#', $url)) {
                     $cleanedUrl = preg_replace('#video#', 'embed/video', $url);
                 }
+                $video->setTrick($trick)
+                  ->setName($cleanedUrl);
             }
 
-            $video->setTrick($trick)
-                  ->setName($cleanedUrl);
+            if ($imageUploaded) {
+                $imageTrick = uniqid("/uploads/", true) . '.' .$imageUploaded->guessExtension();
+
+                try {
+                    $imageUploaded->move(
+                        $this->getParameter('images_directory'),
+                        $imageTrick
+                    );
+                } catch (FileException $e) {
+                    $this->addFlash('danger', 'Une erreur s\'est prroduite lors du chargment du fichier : ' . $e);
+                    return $this->redirectToRoute('trick_create');
+                }
+
+                $image->setTrick($trick)
+                        ->setName($imageTrick);
+            }
 
             try {
                 $em = $this->getDoctrine()->getManager();
-                $em->persist($trick);
-                $em->persist($video);
+                $url ? $em->persist($video) : null; 
+                $imageUploaded ? $em->persist($image) : null;
                 $em->flush();
 
                 $this->addFlash('success', 'Votre Trick a bien été modifié !');
