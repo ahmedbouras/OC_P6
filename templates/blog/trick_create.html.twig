@@ -2,7 +2,7 @@
 
 {% block title %}{{ parent() }} | Creation d'un trick{% endblock %}
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('css/newTrick.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/updateTrick.css') }}">
 {% endblock %}
 
 {% form_theme trickCreationForm 'bootstrap_4_layout.html.twig' %}
@@ -14,7 +14,7 @@
     {{ form_start(trickCreationForm) }}
     <div class="row">
         <div class="bloc-title m-0 p-0 col-12">
-            <img src="{{ asset('images/default-image.jpg')}}" alt="">
+            <img id="main-image" src="{{ asset('images/default-image.jpg')}}" alt="">
             <h1>{{ form_widget(trickCreationForm.title, {
                 'attr': {'placeholder': 'Nom du Trick'},
             }) }}

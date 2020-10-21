@@ -15,9 +15,9 @@
         <div class="bloc-title m-0 p-0 col-12">
             <img id="main-image" src="{{ asset('images/default-image.jpg')}}" alt="">
             {% if app.user %}
-                <button>
-                    <a href="{{ path('trick_update', {id: trick.id}) }}" class=""><img height="16px" src="{{ asset('images/icones/edit.png') }}" alt=""></a>
-                    <a href="{{ path('trick_delete', {id: trick.id}) }}" class=""><img height="18px" src="{{ asset('images/icones/delete.png') }}" alt=""></a>
+                <button id="update-btn">
+                    <a href="{{ path('trick_update', {id: trick.id}) }}" class="mr-3"><img height="16px" src="{{ asset('images/icones/edit.png') }}" alt=""></a>
+                    <a href="{{ path('trick_delete', {id: trick.id}) }}"><img height="18px" src="{{ asset('images/icones/delete.png') }}" alt=""></a>
                 </button>
             {% endif %}
             <h1>{{ trick.title | capitalize}}</h1>
