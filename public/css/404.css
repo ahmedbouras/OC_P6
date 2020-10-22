@@ -1,0 +1,12 @@
+.container {
+    height: 74.5vh;
+}
+
+h1 {
+    font-size: 5em;
+    font-weight: bold;
+}
+
+a, a:hover {
+    color: black;
+}

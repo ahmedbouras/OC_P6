@@ -1,0 +1,25 @@
+{# templates/bundles/TwigBundle/Exception/error404.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/404.css') }}">
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <div class="row d-flex justify-content-center mt-5 mb-5">
+        <h1>OOPS !</h1>
+    </div>
+    <div class="mt-5">
+        <div class="row justify-content-center">
+            <p>Il semblerait que cette page n'existe pas.</p>
+        </div>
+        <div class="row justify-content-center">
+            <p>Revenir à la page d'<a href="{{ path('home') }}">accueil</a>.</p>
+        </div>
+    </div>
+</div>
+    
+{% endblock %}
