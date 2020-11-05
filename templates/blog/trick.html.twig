@@ -23,10 +23,17 @@
     </div>
 
     <div class="row bloc-img-vids mt-2">
-        <div class="col-12 d-flex flex-wrap">
+        <div class="col-12 d-flex flex-wrap justify-content-center">
+            {% for image in trick.images %}
+                <div class="mr-2">
+                    <a href="{{ image.name }}" target="_blank">
+                        <img src="{{ image.name }}" alt="" style="height:150px; width:230px;">
+                    </a>
+                </div>
+            {% endfor %}
             {% for video in trick.videos %}
                 <div class="video mr-2">
-                    <iframe src="{{ video.name }}" allowfullscreen></iframe> 
+                    <iframe src="{{ video.name }}" allow="fullscreen" style="border:none; height:150px; width:230px;"></iframe> 
                 </div>
             {% endfor %}
         </div>
@@ -74,7 +81,7 @@
                     <img class="avatar-img" height="40px" src="{{ asset(comment.user.avatar) }}" alt="">
                     <p class="col-12">{{ comment.user.username }}</p>
                 </div>
-                <p class="comment p-2 w-75">{{ comment.comment }}</p>
+                <p class="comment p-2 w-75">{{ comment.comment|nl2br }}</p>
             </div>
             {% endfor %}
         </div>
