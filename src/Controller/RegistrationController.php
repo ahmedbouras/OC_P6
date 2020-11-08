@@ -66,7 +66,7 @@ class RegistrationController extends AbstractController
                 ->from('no-reply@snowtricks.com')
                 ->to($user->getEmail())
                 ->subject('Confirmation Email')
-                ->htmlTemplate('registration/activation.html.twig')
+                ->htmlTemplate('email/activation.html.twig')
                 ->context([
                     'token' => $user->getActivationToken(),
                 ]);

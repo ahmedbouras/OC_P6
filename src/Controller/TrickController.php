@@ -5,6 +5,9 @@ namespace App\Controller;
 use App\Entity\Image;
 use App\Entity\Trick;
 use App\Entity\Video;
+use App\Entity\Comment;
+use App\Repository\TrickRepository;
+use App\Form\CommentType;
 use App\Form\TrickType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -13,6 +16,36 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class TrickController extends AbstractController
 {
+    /**
+     * @Route("/trick/{title}", name="trick_show")
+     */
+    public function trick(Request $request, TrickRepository $trickRepository, $title)
+    {
+        $trick = $trickRepository->findOneBy(['title' => $title]);
+
+        $comment = new Comment();
+        $form = $this->createForm(CommentType::class, $comment);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment->setComment($form->get('comment')->getData())
+                    ->setCreatedAt(new \DateTime)
+                    ->setTrick($trick)
+                    ->setUser($this->getUser());
+
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($comment);
+                $em->flush();
+
+            return $this->redirectToRoute('trick_show', ['title' => $trick->getTitle()]);
+        }
+
+        return $this->render('trick/show.html.twig', [
+            'trick' => $trick,
+            'commentForm' => $form->createView(),
+        ]);
+    }
+
     /**
      * @Route("/creation/trick", name="trick_create")
      */
@@ -82,7 +115,7 @@ class TrickController extends AbstractController
             }
         }
 
-        return $this->render('blog/trick_create.html.twig', [
+        return $this->render('trick/create.html.twig', [
             'trickCreationForm' => $form->createView(),
         ]);
     }
@@ -151,7 +184,7 @@ class TrickController extends AbstractController
             }
         }
 
-        return $this->render('blog/trick_modify.html.twig', [
+        return $this->render('trick/update.html.twig', [
             'trick' => $trick,
             'trickEditForm' => $form->createView(),
         ]);
