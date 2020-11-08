@@ -54,3 +54,7 @@ small {
     bottom: 0;
     right: 0;
 }
+
+.card {
+    border: none;
+}
