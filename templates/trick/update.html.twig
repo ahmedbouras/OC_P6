@@ -16,7 +16,7 @@
         <div class="bloc-title m-0 p-0 col-12">
             <img id="main-image" src="{{ asset('images/default-image.jpg')}}" alt="">
 
-            {% if app.user == trick.user or 'ROLE_ADMIN' in app.user.roles %}
+            {% if app.user %}
                 <button id="update-btn">
                     <a href="{{ path('trick_update', {id: trick.id}) }}" class="mr-3"><img height="16px" src="{{ asset('images/icones/edit.png') }}" alt=""></a>
                     <a href="{{ path('trick_delete', {id: trick.id}) }}"><img height="18px" src="{{ asset('images/icones/delete.png') }}" alt=""></a>
@@ -40,33 +40,39 @@
                     </a>
                     <div class="card-body d-flex justify-content-end pr-0">
                     {% if app.user %}
-                        <button>
+                        <div class="btn-media">
                             <a href="#" class="card-link">
                                 <img height="16px" src="{{ asset('images/icones/edit.png') }}" alt="bouton de modification">
                             </a>
                             <a href="#" class="card-link">
                                 <img height="18px" src="{{ asset('images/icones/delete.png') }}" alt="bouton de suppression">
                             </a>
-                        </button>
+                        </div>
                     {% endif %}
                     </div>
                 </div>
             {% endfor %}
 
             {% for video in trick.videos %}
-                <div class="card mr-2 mb-2">
-                    <iframe src="{{ video.name }}" allow="fullscreen" style="height:150px; width:230px;"></iframe>
-                    <div class="card-body d-flex justify-content-end pr-0">
+                <div class="card mr-2 mb-2 edit-img-vid" style="width:230px;">
+                    <iframe src="{{ video.name }}" allow="fullscreen" style="height:150px"></iframe>
+                    
                         {% if app.user %}
-                            <button>
-                                <a href="#" class="card-link">
-                                    <img height="16px" src="{{ asset('images/icones/edit.png') }}" alt="bouton de modification">
-                                </a>
+                        <div class="card-body d-flex justify-content-end pr-0">
+                            <div class="btn-media p-1">
+                                <img data-id="{{ video.id }}" class="card-link edit-video" height="16px" src="{{ asset('images/icones/edit.png') }}" alt="bouton de modification">
                                 <a href="{{ path('video_delete', {id: video.id, trickId: trick.id}) }}" class="card-link">
                                     <img height="18px" src="{{ asset('images/icones/delete.png') }}" alt="bouton de suppression">
                                 </a>
-                            </button>
+                            </div>
+                        </div>
                         {% endif %}
+                    
+                    <div data-id="{{ video.id }}" class="hidden-form card-body card-form p-0">
+                        <form class="d-flex flex-column" method="post" action="{{ path('video_update', {id: video.id, trickId: trick.id}) }}">
+                            <input class="form-control mb-1" type="text" name="newUrl">
+                            <button type="submit">Modifier la vidéo</button>
+                        </form>
                     </div>
                 </div>
             {% endfor %}
@@ -126,4 +132,8 @@
 
 </div>
 
+{% endblock %}
+
+{% block script %}
+    <script src="{{ asset('js/script.js') }}"></script>
 {% endblock %}

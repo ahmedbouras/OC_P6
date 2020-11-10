@@ -58,3 +58,7 @@ small {
 .card {
     border: none;
 }
+
+.btn-media {
+    border: 2px outset black;
+}
