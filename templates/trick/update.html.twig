@@ -40,11 +40,9 @@
                     </a>
                     <div class="card-body d-flex justify-content-end pr-0">
                     {% if app.user %}
-                        <div class="btn-media">
-                            <a href="#" class="card-link">
-                                <img height="16px" src="{{ asset('images/icones/edit.png') }}" alt="bouton de modification">
-                            </a>
-                            <a href="#" class="card-link">
+                        <div class="btn-media p-1">
+                            <img data-id="{{ image.id }}" class="card-link edit-image" height="16px" src="{{ asset('images/icones/edit.png') }}" alt="bouton de modification">
+                            <a href="{{ path('image_delete', {id: image.id, trickId: trick.id}) }}" class="card-link">
                                 <img height="18px" src="{{ asset('images/icones/delete.png') }}" alt="bouton de suppression">
                             </a>
                         </div>

@@ -2,12 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\Image;
 use App\Entity\Video;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class MediaController extends AbstractController
 {
+    public const PUBLIC_PATH = 'C:/wamp64/www/oc/OC_P6/public';
+
     /**
      * @Route("/video/delete/{id}/trick/{trickId}", name="video_delete")
      */
@@ -63,5 +66,29 @@ class MediaController extends AbstractController
             $this->addFlash('danger', 'Une erreur est survenue lors de la modification de la vidéo.');
             return $this->redirectToRoute('trick_update', ['id' => $trickId]);
         }        
+    }
+
+    /**
+     * @Route("/image/delete/{id}/trick/{trickId}", name="image_delete")
+     */
+    public function deleteImage(Image $image, $trickId)
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        try {
+            $imgPath = $image->getName();
+
+            $em =$this->getDoctrine()->getManager();
+            $em->remove($image);
+            $em->flush();
+
+            unlink(self::PUBLIC_PATH . $imgPath);
+
+            $this->addFlash('success', 'Image supprimé.');
+            return $this->redirectToRoute('trick_update', ['id' => $trickId]);
+        } catch (\Exception $e) {
+            $this->addFlash('danger', "Une erreur est survenue lors de la suppression de l'image.");
+            return $this->redirectToRoute('trick_update', ['id' => $trickId]);
+        }
     }
 }
