@@ -26,9 +26,19 @@ hr {
 }
 
 #update-btn {
+    border: 2px outset black;
+    background-color: white;
     position: absolute;
     top: 10px;
     right: 20px;
+}
+
+#main-image-form {
+    background-color: rgba(255, 255, 255, .70);
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-45%, -50%);
 }
 
 .bloc-title h1 {
@@ -43,12 +53,6 @@ hr {
     transform: translate(-50%, -50%);
 }
 
-#update-btn {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-}
-
 small {
     position: absolute;
     bottom: 0;
@@ -61,4 +65,5 @@ small {
 
 .btn-media {
     border: 2px outset black;
+    background-color: white;
 }

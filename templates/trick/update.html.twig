@@ -16,12 +16,12 @@
         <div class="bloc-title m-0 p-0 col-12">
             <img id="main-image" src="{{ asset('images/default-image.jpg')}}" alt="">
 
-            {% if app.user %}
-                <button id="update-btn">
-                    <a href="{{ path('trick_update', {id: trick.id}) }}" class="mr-3"><img height="16px" src="{{ asset('images/icones/edit.png') }}" alt=""></a>
-                    <a href="{{ path('trick_delete', {id: trick.id}) }}"><img height="18px" src="{{ asset('images/icones/delete.png') }}" alt=""></a>
-                </button>
-            {% endif %}
+            <div id="update-btn" class="p-1">
+                <img id="edit-main-image" class="mr-3" data-id="{{ trick.id }}" height="16px" src="{{ asset('images/icones/edit.png') }}" alt="">
+                <a href="{{ path('trick_delete', {id: trick.id}) }}">
+                    <img height="18px" src="{{ asset('images/icones/delete.png') }}" alt="">
+                </a>
+            </div>
 
             <h1>{{ form_widget(trickEditForm.title, {
                 'attr': {'placeholder': 'Nom du Trick'},

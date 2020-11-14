@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Image;
+use App\Entity\Trick;
 use App\Entity\Video;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -147,6 +148,64 @@ class MediaController extends AbstractController
         } else {
             $this->addFlash('danger', "Aucune image n'a été chargé.");
             return $this->redirectToRoute('trick_update', ['id' => $trickId]);
+        }
+    }
+
+    /**
+     * @Route("/mainImage/update/{id}")
+     */
+    public function updateMainImage(Trick $trick)
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        // TODO:  REFACTORISER POUR EVITER DOUBLON
+        $allowedExtensions = ['jpeg', 'jpg', 'png'];
+        $imgBefore = $trick->getMainImage() ? $trick->getMainImage() : false;
+
+        if (!empty($_FILES['mainImage']['name'])) {
+            $mainImageExtension = pathinfo(strtolower($_FILES['mainImage']['name']), PATHINFO_EXTENSION);
+            $imgSize = getimagesize($_FILES['mainImage']['tmp_name']);
+
+            if (!in_array($mainImageExtension, $allowedExtensions)) {
+                $this->addFlash('danger', "L'image n'est pas au format jpg, jpeg ou png.");
+                return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+            } elseif ($imgSize[0] < 900 && $imgSize[1] < 600) {
+                $this->addFlash('danger', "L'image doit faire 900x600px minimum.");
+                return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+            } elseif ($_FILES['mainImage']['size'] > 1024000) {
+                $this->addFlash('danger', "L'image ne doit pas dépasser les 1024ko.");
+                return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+            } else {
+                $mainImage = uniqid("/uploads/", true) . '.' .$mainImageExtension;
+
+                try {
+                    move_uploaded_file(
+                        $_FILES['mainImage']['tmp_name'], 
+                        self::PUBLIC_PATH . $mainImage);
+                } catch (FileException $e) {
+                    $this->addFlash('danger', "Une erreur s'est produite lors de l'enregistrement de l'image.");
+                    return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+                }
+
+                $trick->setMainImage($mainImage);
+
+                try {
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($trick);
+                    $em->flush();
+        
+                    $imgBefore !== null ? unlink(self::PUBLIC_PATH . $imgBefore) : false;
+        
+                    $this->addFlash('success', 'Votre image a bien été enregistré !');
+                    return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+                } catch (\Exception $e) {
+                    $this->addFlash('danger', 'Une erreur s\'est produite durant l\'enregistrement en base de donnée.');
+                    return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+                }
+            }
+        } else {
+            $this->addFlash('danger', "Aucune image n'a été chargé.");
+            return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
         }
     }
 }
