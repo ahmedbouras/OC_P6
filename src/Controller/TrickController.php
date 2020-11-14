@@ -201,7 +201,7 @@ class TrickController extends AbstractController
             $em =$this->getDoctrine()->getManager();
             $em->remove($trick);
             $em->flush();
-
+            // TODO: supprimer les images en local
             $this->addFlash('success', 'Le trick a bien été supprimé !');
             return $this->redirectToRoute('home');
         } catch (\Exception $e) {

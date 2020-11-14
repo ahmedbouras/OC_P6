@@ -24,7 +24,7 @@
 
             <div id="update-btn" class="p-1">
                 <img id="edit-main-image" class="mr-3" data-id="{{ trick.id }}" height="16px" src="{{ asset('images/icones/edit.png') }}" alt="">
-                <a href="{{ path('trick_delete', {id: trick.id}) }}">
+                <a href="{{ path('main_image_delete', {id: trick.id}) }}">
                     <img height="18px" src="{{ asset('images/icones/delete.png') }}" alt="">
                 </a>
             </div>

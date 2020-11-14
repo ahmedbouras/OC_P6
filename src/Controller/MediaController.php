@@ -152,7 +152,7 @@ class MediaController extends AbstractController
     }
 
     /**
-     * @Route("/mainImage/update/{id}")
+     * @Route("/mainImage/update/{id}", name="main_image_update")
      */
     public function updateMainImage(Trick $trick)
     {
@@ -160,7 +160,7 @@ class MediaController extends AbstractController
 
         // TODO:  REFACTORISER POUR EVITER DOUBLON
         $allowedExtensions = ['jpeg', 'jpg', 'png'];
-        $imgBefore = $trick->getMainImage() ? $trick->getMainImage() : false;
+        $imgBefore = $trick->getMainImage() !== null ? $trick->getMainImage() : null;
 
         if (!empty($_FILES['mainImage']['name'])) {
             $mainImageExtension = pathinfo(strtolower($_FILES['mainImage']['name']), PATHINFO_EXTENSION);
@@ -205,6 +205,36 @@ class MediaController extends AbstractController
             }
         } else {
             $this->addFlash('danger', "Aucune image n'a été chargé.");
+            return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+        }
+    }
+
+    /**
+     * @Route("/mainImage/delete/{id}", name="main_image_delete")
+     */
+    public function deleteMainImage(Trick $trick)
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $imgBefore = $trick->getMainImage() !== null ? $trick->getMainImage() : null;
+        if ($imgBefore) {
+            $trick->setMainImage(null);
+
+            try {
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($trick);
+                $em->flush();
+    
+                unlink(self::PUBLIC_PATH . $imgBefore);
+    
+                $this->addFlash('success', "L'image principale a bien été supprimé !");
+                return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+            } catch (\Exception $e) {
+                $this->addFlash('danger', "Une erreur s'est produite durant la suppression de l'image.");
+                return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+            }
+        } else {
+            $this->addFlash('danger', "Aucune image principale à supprimer.");
             return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
         }
     }
