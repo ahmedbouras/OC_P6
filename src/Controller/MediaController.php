@@ -194,12 +194,12 @@ class MediaController extends AbstractController
                     $em->persist($trick);
                     $em->flush();
         
-                    $imgBefore !== null ? unlink(self::PUBLIC_PATH . $imgBefore) : false;
+                    $imgBefore !== null ? unlink(self::PUBLIC_PATH . $imgBefore) : null;
         
-                    $this->addFlash('success', 'Votre image a bien été enregistré !');
+                    $this->addFlash('success', "L'image principale a bien été enregistré !");
                     return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
                 } catch (\Exception $e) {
-                    $this->addFlash('danger', 'Une erreur s\'est produite durant l\'enregistrement en base de donnée.');
+                    $this->addFlash('danger', "Une erreur s'est produite durant l'enregistrement en base de donnée.");
                     return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
                 }
             }

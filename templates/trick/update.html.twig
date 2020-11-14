@@ -14,7 +14,13 @@
     {{ form_start(trickEditForm) }}
     <div class="row">
         <div class="bloc-title m-0 p-0 col-12">
-            <img id="main-image" src="{{ asset('images/default-image.jpg')}}" alt="">
+            {% if trick.mainImage != null %}
+                <img id="main-image" src="{{ asset(trick.mainImage)}}" alt="">
+            {% elseif trick.images|length > 0 %}
+                <img id="main-image" src="{{ asset(trick.images[0].name )}}" alt="">
+            {% else %}
+                <img id="main-image" src="{{ asset('images/default-image.jpg')}}" alt="">
+            {% endif %}
 
             <div id="update-btn" class="p-1">
                 <img id="edit-main-image" class="mr-3" data-id="{{ trick.id }}" height="16px" src="{{ asset('images/icones/edit.png') }}" alt="">
