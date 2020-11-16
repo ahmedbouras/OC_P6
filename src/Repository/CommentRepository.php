@@ -19,6 +19,23 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
+    /**
+     * @return Comment[]
+     */
+    public function findByRangeOf($offset, $limit, $id)
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->where('c.trick = :id')
+            ->orderBy('c.id', 'DESC')
+            ->setParameter('id', $id)
+            ->setFirstResult( $offset )
+            ->setMaxResults( $limit );
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
+
     // /**
     //  * @return Comment[] Returns an array of Comment objects
     //  */

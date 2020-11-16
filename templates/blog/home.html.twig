@@ -76,7 +76,7 @@
             var offset = Number($("#offset").val());
             var total = Number($("#total").val());
 
-            var itemToDisplay = 5;
+            var itemToDisplay = 10;
             offset += itemToDisplay;
 
             if (offset <= total) {
@@ -86,7 +86,6 @@
                     url: "{{ path('more_trick') }}",
                     data: {offset:offset},
                     success: function (response) {
-                        console.log(response);
                         $(".card:last").after(response).show();
 
                         var rowno = offset + itemToDisplay;
