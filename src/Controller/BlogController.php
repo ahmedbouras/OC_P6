@@ -13,7 +13,8 @@ class BlogController extends AbstractController
      */
     public function home(TrickRepository $trickRepository)
     {
-        $tricks = $trickRepository->findAll();
+        //$tricks = $trickRepository->findAll();
+        $tricks = $trickRepository->findByRangeOf(5, 10);
         return $this->render('blog/home.html.twig', [
             'tricks' => $tricks
         ]);

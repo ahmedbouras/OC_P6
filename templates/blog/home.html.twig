@@ -60,10 +60,16 @@
 
         <div class="d-flex justify-content-center">
             <button type="button" class="btn btn-secondary btn-lg">Voir plus</button>
+            <input type="hidden" id="" value="0">
+            <input type="hidden" id="" value="">
         </div>
     </div>
 
     <a href="#list-tricks"><img id="btn-up" src="{{ asset('images/icones/up.png') }}" alt=""></a>
 </section>
 
+{% endblock %}
+
+{% block script %}
+    <script src="{{ asset('js/home.js') }}"></script>
 {% endblock %}
