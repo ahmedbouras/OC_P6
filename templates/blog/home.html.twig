@@ -29,7 +29,7 @@
         <div class="row justify-content-center">
 
         {% for trick in tricks %}
-            <div class="card col-2">
+            <div class="card col-10 col-md-4 col-lg-2 ">
                 <a href="{{ path('trick_show', {title: trick.title}) }}">
                 {% if trick.mainImage != null %}
                     <img style="height: 200px; width: 100%; display: block;" src="{{ asset(trick.mainImage)}}" alt="Card image">

@@ -39,3 +39,13 @@ a:link, a:hover, a:visited, a:active {
     color: #373a3c;
     text-decoration: none;
 }
+
+@media screen and (max-width: 540px) { 
+    .card { 
+      margin-left: 0px; 
+    }
+
+    #hero {
+        height: 580px;
+    }
+  } 
