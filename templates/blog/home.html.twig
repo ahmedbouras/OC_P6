@@ -59,9 +59,9 @@
         </div>
 
         <div class="d-flex justify-content-center">
-            <button type="button" class="btn btn-secondary btn-lg">Voir plus</button>
-            <input type="hidden" id="" value="0">
-            <input type="hidden" id="" value="{{ totalTricks }}">
+            <button type="button" id="load-more" class="btn btn-secondary btn-lg">Voir plus</button>
+            <input type="hidden" id="offset" value="0">
+            <input type="hidden" id="total" value="{{ totalTricks }}">
         </div>
     </div>
 
@@ -71,5 +71,35 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{{ asset('js/home.js') }}"></script>
+    <script>
+        $("#load-more").click(function () { 
+            var offset = Number($("#offset").val());
+            var total = Number($("#total").val());
+
+            var itemToDisplay = 5;
+            offset += itemToDisplay;
+
+            if (offset <= total) {
+                $("#offset").val(offset);
+                $.ajax({
+                    type: "post",
+                    url: "{{ path('more_trick') }}",
+                    data: {offset:offset},
+                    success: function (response) {
+                        console.log(response);
+                        $(".card:last").after(response).show();
+
+                        var rowno = offset + itemToDisplay;
+                        if (rowno > total) {
+                            $("#load-more").text("Voir moins");
+                        }
+                    }
+                });
+            } else {
+                $(`.card:nth-child(${itemToDisplay})`).nextAll(".card").remove();
+                $("#offset").val(0);
+                $("#load-more").text("Voir plus");
+            }
+        });
+    </script>
 {% endblock %}
