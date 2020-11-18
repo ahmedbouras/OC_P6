@@ -21,9 +21,10 @@ $(form).append(btn);
 $("#edit-main-image").click(function() {
     let id = $(this).attr("data-id");
 
-    $(div).attr(
-        "id", "main-image-form",
-    );
+    $(div).attr({
+        id: "main-image-form",
+        class: "offset-md-4 col-md-4 mt-md-2 mb-md-2",
+    });
     $(form).attr({
         action: `/mainImage/update/${id}`,
         enctype: "multipart/form-data",
@@ -34,7 +35,7 @@ $("#edit-main-image").click(function() {
     })
     $(btn).text("Modifier l'image principale");
 
-    $("#update-btn").after(div);
+    $("#main-image").after(div);
 })
 
 /******************** BLOC-IMG-VIDS ********************/
