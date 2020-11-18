@@ -2,10 +2,6 @@ body {
     background-color: #f8f9fa;
 }
 
-.container-login {
-    height: 74.5vh;
-}
-
 .outline-bloc {
     background-color: white;
     border-radius: 5px;
@@ -13,4 +9,10 @@ body {
 
 .container-forgot {
     height: 68vh;
+}
+
+@media only screen and (min-width: 992px) {
+    .xs-to-lg {
+        display: none;
+    }
 }
