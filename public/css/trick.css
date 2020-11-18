@@ -17,10 +17,6 @@ hr {
     border-radius: 5px 5px 0 0;
 }
 
-.btn {
-    border-radius: 5px;
-}
-
 .bloc-title {
     position: relative;
     text-align: center;
@@ -58,7 +54,6 @@ hr {
 
 .comment {
     border: 1px solid #373a3c;
-    border-radius: 5px;
 }
 
 @media only screen and (max-width: 768px) { 
@@ -82,7 +77,7 @@ hr {
         display: none;
     }
 
-    p, .btn {
+    p {
         font-size: 0.8em;
     }
 } 
