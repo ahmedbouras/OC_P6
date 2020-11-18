@@ -61,6 +61,10 @@ small {
     background-color: white;
 }
 
+.btn {
+    border-radius: 5px;
+}
+
 @media only screen and (max-width: 768px) { 
     .outline-block {
         margin: 50px;
@@ -82,7 +86,15 @@ small {
         display: none;
     }
 
-    p, .btn {
+    p {
         font-size: 0.8em;
+    }
+
+    .btn {
+        font-size: 0.95em;
+    }
+
+    .xs-to-lg {
+        margin-top: 20px;
     }
 } 
