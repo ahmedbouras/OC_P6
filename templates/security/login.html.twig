@@ -24,13 +24,13 @@
                 <div class="bloc-fields pt-4 pb-4 mb-4">
                     
                     <div class="row">
-                        <div class="form-group offset-1">
+                        <div class="form-group">
                             <label for="username">Nom d'utilisateur</label>
                             <input type="text" value="{{ last_username }}" name="username" id="username" class="form-control" required autofocus>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group offset-1">
+                        <div class="form-group">
                             <label for="password">Mot de passe</label>
                             <input type="password" name="password" id="password" class="form-control" required>
                         </div>
@@ -39,14 +39,14 @@
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
                     <div class="row xs-to-lg">
-                        <div class="form-group offset-2 text-center">
-                            <a href="{{ path('app_register') }}">S'inscrire</a>
+                        <div class="col">
+                            <p class="text-center"><a href="{{ path('app_register') }}">S'inscrire</a></p>
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="form-group offset-2 text-center">
-                            <a href="{{ path('app_forgot_pass') }}">Mot de passe oublié ?</a>
+                        <div class="col">
+                            <p class="text-center"><a href="{{ path('app_forgot_pass') }}">Mot de passe oublié ?</a></p>
                         </div>
                     </div>
 
