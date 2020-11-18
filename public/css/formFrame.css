@@ -1,9 +1,14 @@
-.bloc-fields {
-    border: 2px solid #373a3c;
+body {
+    background-color: #f8f9fa;
 }
 
 .container-login {
     height: 74.5vh;
+}
+
+.outline-bloc {
+    background-color: white;
+    border-radius: 5px;
 }
 
 .container-forgot {
