@@ -1,6 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ parent() }} | Mot de passe oublié {% endblock %}
+{% block title %}
+    {{ parent() }} | Mot de passe oublié 
+{% endblock %}
+
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/formFrame.css') }}">
 {% endblock %}
@@ -9,33 +12,38 @@
 
 {% block body %}
 
-<div class="container mt-5 mb-5 container-forgot">
+<div class="container-fluid">
+    <div class="row">
+        <div class="offset-1 col-10 offset-lg-4 col-lg-4 main-bloc">
 
-    <div class="row mb-5 text-center">
-        <h1 class="col-12">Mot de passe oublié</h1>
-    </div>
-  
-    {{ form_start(forgotForm) }}
-    <div class="row d-flex justify-content-center text-center">
-        <div class="bloc-fields col-6 pt-4 pb-4">
-            
-            <div class="row">
-                <div class="form-group col-6 offset-3">
-                    {{ form_row(forgotForm.username, {
-                        label: 'Nom d\'utilisateur',
-                    }) }}
-                </div>
+            <div class="row mt-5 mb-3 text-center">
+                <h1 class="col-12">Mot de passe oublié</h1>
             </div>
+        
+            {{ form_start(forgotForm) }}
+                <div class="row d-flex justify-content-center text-center outline-bloc">
+                    <div class="pt-4 pb-4 mb-4">
+                        
+                        <div class="row">
+                            <div class="form-group col">
+                                {{ form_row(forgotForm.username, {
+                                    label: 'Nom d\'utilisateur',
+                                }) }}
+                            </div>
+                        </div>
 
-            <div class="row">
-                <div class="col-12">
-                    <button type="submit" class="btn btn-secondary">Demande de réinitialisation</button>
+                        <div class="row">
+                            <div class="col">
+                                <button type="submit" class="btn btn-secondary">Demande de réinitialisation</button>
+                            </div>
+                        </div>
+                        
+                    </div>
                 </div>
-            </div>
-            
+            {{ form_end(forgotForm) }}
+
         </div>
     </div>
-    {{ form_end(forgotForm) }}
 </div>
     
 {% endblock %}

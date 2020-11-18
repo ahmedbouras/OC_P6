@@ -7,8 +7,8 @@ body {
     border-radius: 5px;
 }
 
-.container-forgot {
-    height: 68vh;
+.main-bloc {
+    height: 615px;
 }
 
 @media only screen and (min-width: 992px) {
