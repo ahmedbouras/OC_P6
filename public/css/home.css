@@ -1,3 +1,7 @@
+body {
+    background-color: #f8f9fa;
+}
+
 #hero {
     height: 680px;
     background-image: url('../images/hero-image.jpg');
@@ -28,6 +32,17 @@
     padding: 0;
     margin-left: 20px;
     margin-bottom: 20px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 0 5px #dbdbdb;
+}
+
+.card:hover {
+    box-shadow: 0 0 10px #c7c7c7;
+}
+
+.card img {
+    border-radius: 5px;
 }
 
 #btn-up {
