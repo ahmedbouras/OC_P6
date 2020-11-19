@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Image;
 use App\Entity\Trick;
 use App\Entity\Video;
+use App\Service\VideoHandler;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -12,6 +13,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 class MediaController extends AbstractController
 {
     public const PUBLIC_PATH = 'C:/wamp64/www/oc/OC_P6/public';
+    public const REGEX_VIDEO = '#^(https://www.(youtube|dailymotion).com)#';
 
     /**
      * @Route("/video/delete/{id}/trick/{trickId}", name="video_delete")
@@ -41,16 +43,11 @@ class MediaController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         // TODO: REFACTORISER EN METHODE POUR EVITER DOUBLON
-        $url = $_POST['newUrl'];
-        if ($url) {
-            if (preg_match('#^(https://www.(youtube|dailymotion).com)#', $url)) {
-                if (preg_match('#youtube#', $url)) {
-                    $splitedUrl = preg_split('#&#', $url);
-                    $cleanedUrl = preg_replace('#watch\?v=#', 'embed/', $splitedUrl[0]);
-                } elseif (preg_match('#dailymotion#', $url)) {
-                    $cleanedUrl = preg_replace('#video#', 'embed/video', $url);
-                }
-                $video->setName($cleanedUrl);
+        if ($videoLink = $_POST['newUrl']) {
+            if (preg_match(self::REGEX_VIDEO, $videoLink)) {
+                $videoHandler = new VideoHandler();
+                $embeddedLink = $videoHandler->makeLinkToEmbed($videoLink);
+                $video->setName($embeddedLink);
             } else {
                 $this->addFlash('danger', 'Une erreur est survenue lors de la modification de la vidéo.');
                 return $this->redirectToRoute('trick_update', ['id' => $trickId]);
