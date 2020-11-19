@@ -61,16 +61,13 @@ class TrickController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $trick = new Trick();
-        $video = new Video();
-        $image = new Image();
 
         $form = $this->createForm(TrickType::class, $trick);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
             $title = $form->get('title')->getData();
-            $url = $form->get('video')->getData();
-            $imageUploaded = $form->get('image')->getData();
 
             $trick->setTitle(strtolower($title))
                   ->setCreatedAt(new \DateTime())
@@ -78,19 +75,14 @@ class TrickController extends AbstractController
                   ->setDefaultImage('images/default-image.jpg')
                   ->setUser($this->getUser());
 
-            // TODO: REFACTORISER EN METHODE POUR EVITER DOUBLON
-            if ($url) {
-                if (preg_match('#youtube#', $url)) {
-                    $splitedUrl = preg_split('#&#', $url);
-                    $cleanedUrl = preg_replace('#watch\?v=#', 'embed/', $splitedUrl[0]);
-                } elseif (preg_match('#dailymotion#', $url)) {
-                    $cleanedUrl = preg_replace('#video#', 'embed/video', $url);
-                }
-                $video->setTrick($trick)
-                      ->setName($cleanedUrl);
+            if ($videoLink = $form->get('video')->getData()) {
+                $videoHandler = new VideoHandler();
+                $embeddedLink = $videoHandler->makeLinkToEmbed($videoLink);
+                $video = $videoHandler->setEntity($trick, $embeddedLink);
+                $em->persist($video);
             }
 
-            if ($imageUploaded) {
+            if ($imageUploaded = $form->get('image')->getData()) {
                 $imageTrick = uniqid("/uploads/", true) . '.' .$imageUploaded->guessExtension();
 
                 try {
@@ -103,15 +95,16 @@ class TrickController extends AbstractController
                     return $this->redirectToRoute('trick_create');
                 }
 
+                $image = new Image();
                 $image->setTrick($trick)
                       ->setName($imageTrick);
+                
+                $em->persist($image);
             }
 
             try {
-                $em = $this->getDoctrine()->getManager();
+                
                 $em->persist($trick);
-                $url ? $em->persist($video) : null; 
-                $imageUploaded ? $em->persist($image) : null;
                 $em->flush();
 
                 $this->addFlash('success', 'Votre Trick a bien été enregistré !');
@@ -134,33 +127,25 @@ class TrickController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        $video = new Video();
-        $image = new Image();
-
         $form = $this->createForm(TrickType::class, $trick);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
             $title = $form->get('title')->getData();
-            $imageUploaded = $form->get('image')->getData();
-            $url = $form->get('video')->getData();
 
             $trick->setTitle(strtolower($title))
                   ->setUpdatedAt(new \DateTime());
 
-            // TODO: REFACTORISER EN METHODE POUR EVITER DOUBLON
-            if ($url) {
-                if (preg_match('#youtube#', $url)) {
-                    $splitedUrl = preg_split('#&#', $url);
-                    $cleanedUrl = preg_replace('#watch\?v=#', 'embed/', $splitedUrl[0]);
-                } elseif (preg_match('#dailymotion#', $url)) {
-                    $cleanedUrl = preg_replace('#video#', 'embed/video', $url);
-                }
-                $video->setTrick($trick)
-                  ->setName($cleanedUrl);
+            if ($videoLink = $form->get('video')->getData()) {
+                $videoHandler = new VideoHandler();
+                $embeddedLink = $videoHandler->makeLinkToEmbed($videoLink);
+                $video = $videoHandler->setEntity($trick, $embeddedLink);
+                $em->persist($video);
             }
 
-            if ($imageUploaded) {
+            if ($imageUploaded = $form->get('image')->getData()) {
                 $imageTrick = uniqid("/uploads/", true) . '.' .$imageUploaded->guessExtension();
 
                 try {
@@ -173,20 +158,20 @@ class TrickController extends AbstractController
                     return $this->redirectToRoute('trick_create');
                 }
 
+                $image = new Image();
                 $image->setTrick($trick)
                         ->setName($imageTrick);
+
+                $em->persist($image);
             }
 
             try {
-                $em = $this->getDoctrine()->getManager();
-                $url ? $em->persist($video) : null; 
-                $imageUploaded ? $em->persist($image) : null;
                 $em->flush();
 
                 $this->addFlash('success', 'Votre Trick a bien été modifié !');
                 return $this->redirectToRoute('home');
             } catch (\Exception $e) {
-                $this->addFlash('danger', 'Une erreur s\'est produite durant l\'enregistrement en base de donnée.');
+                $this->addFlash('danger', "Une erreur s'est produite durant l'enregistrement en base de donnée.");
                 return $this->redirectToRoute('home');
             }
         }
