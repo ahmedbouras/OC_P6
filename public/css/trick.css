@@ -41,6 +41,10 @@ hr {
     transform: translate(-50%, -50%);
 }
 
+.bloc-see-medias {
+    display: none;
+}
+
 #update-btn {
     border: 2px outset black;
     background-color: white;
@@ -81,5 +85,13 @@ hr {
 
     p {
         font-size: 0.8em;
+    }
+
+    .bloc-see-medias {
+        display: flex;
+    }
+
+    .bloc-img-vids {
+        display: none;
     }
 } 

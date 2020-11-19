@@ -36,7 +36,7 @@ $("#edit-main-image").click(function() {
     $(btn).text("Modifier l'image principale");
 
     $("#main-image").after(div);
-})
+});
 
 /******************** BLOC-IMG-VIDS ********************/
 
@@ -59,7 +59,7 @@ $(".edit-image").click(function() {
     $(btn).text("Modifier l'image");
 
     $(`.card[data-img=${idImg}]`).append(div);
-})
+});
 
 // Evenement pour les vidéos associés à un Trick
 $(".edit-video").click(function() {
@@ -76,4 +76,9 @@ $(".edit-video").click(function() {
     $(btn).text("Modifier la video");
 
     $(`.card[data-video=${idVideo}]`).append(div);
-})
+});
+
+$(".see-medias").click(function() { 
+    $(".bloc-img-vids").css("display", 'initial');
+    $(".bloc-see-medias").css("display", "none");    
+});

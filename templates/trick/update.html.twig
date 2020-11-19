@@ -46,6 +46,10 @@
                 
                 </div>
 
+                <div class="row bloc-see-medias justify-content-center pt-4 pb-4">
+                    <div class="btn btn-secondary see-medias">Afficher les médias</div>
+                </div>
+
                 <div class="row bloc-img-vids mt-2">
                     <div class="col-12 d-flex flex-wrap justify-content-center">
                         {% for image in trick.images %}
@@ -152,5 +156,5 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{{ asset('js/script.js') }}"></script>
+    <script src="{{ asset('js/update-trick.js') }}"></script>
 {% endblock %}

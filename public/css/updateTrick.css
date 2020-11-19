@@ -34,6 +34,10 @@ hr {
     right: 20px;
 }
 
+#update-btn:hover {
+    cursor: pointer;
+}
+
 .bloc-title h1 {
     color: #373a3c;
     background-color: rgba(255, 255, 255, 0.70);
@@ -52,6 +56,10 @@ small {
     right: 0;
 }
 
+.bloc-see-medias {
+    display: none;
+}
+
 .card {
     border: none;
 }
@@ -59,6 +67,10 @@ small {
 .btn-media {
     border: 2px outset black;
     background-color: white;
+}
+
+.btn-media:hover {
+    cursor: pointer;
 }
 
 @media only screen and (max-width: 768px) { 
@@ -88,5 +100,13 @@ small {
 
     .xs-to-lg {
         margin-top: 20px;
+    }
+
+    .bloc-see-medias {
+        display: flex;
+    }
+
+    .bloc-img-vids {
+        display: none;
     }
 } 
