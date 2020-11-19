@@ -2,18 +2,17 @@
 
 namespace App\Controller;
 
-use App\Entity\Image;
 use App\Entity\Trick;
-use App\Entity\Video;
 use App\Entity\Comment;
-use App\Repository\TrickRepository;
-use App\Form\CommentType;
 use App\Form\TrickType;
+use App\Form\CommentType;
+use App\Service\VideoHandler;
+use App\Repository\TrickRepository;
 use App\Repository\CommentRepository;
+use App\Service\ImageHandler;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TrickController extends AbstractController
 {
@@ -66,7 +65,6 @@ class TrickController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
             $title = $form->get('title')->getData();
 
             $trick->setTitle(strtolower($title))
@@ -75,6 +73,8 @@ class TrickController extends AbstractController
                   ->setDefaultImage('images/default-image.jpg')
                   ->setUser($this->getUser());
 
+            $em = $this->getDoctrine()->getManager();
+
             if ($videoLink = $form->get('video')->getData()) {
                 $videoHandler = new VideoHandler();
                 $embeddedLink = $videoHandler->makeLinkToEmbed($videoLink);
@@ -82,28 +82,15 @@ class TrickController extends AbstractController
                 $em->persist($video);
             }
 
-            if ($imageUploaded = $form->get('image')->getData()) {
-                $imageTrick = uniqid("/uploads/", true) . '.' .$imageUploaded->guessExtension();
-
-                try {
-                    $imageUploaded->move(
-                        $this->getParameter('images_directory'),
-                        $imageTrick
-                    );
-                } catch (FileException $e) {
-                    $this->addFlash('danger', 'Une erreur s\'est prroduite lors du chargment du fichier : ' . $e);
-                    return $this->redirectToRoute('trick_create');
-                }
-
-                $image = new Image();
-                $image->setTrick($trick)
-                      ->setName($imageTrick);
-                
+            if ($uploadedImage = $form->get('image')->getData()) {
+                $imageHandler = new ImageHandler();
+                $renamedImage = $imageHandler->renameFile($uploadedImage);
+                $imageHandler->moveFile($uploadedImage, $renamedImage);
+                $image = $imageHandler->setEntity($trick, $renamedImage);
                 $em->persist($image);
             }
 
             try {
-                
                 $em->persist($trick);
                 $em->flush();
 
@@ -131,12 +118,12 @@ class TrickController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-
             $title = $form->get('title')->getData();
 
             $trick->setTitle(strtolower($title))
                   ->setUpdatedAt(new \DateTime());
+
+            $em = $this->getDoctrine()->getManager();
 
             if ($videoLink = $form->get('video')->getData()) {
                 $videoHandler = new VideoHandler();
@@ -145,23 +132,11 @@ class TrickController extends AbstractController
                 $em->persist($video);
             }
 
-            if ($imageUploaded = $form->get('image')->getData()) {
-                $imageTrick = uniqid("/uploads/", true) . '.' .$imageUploaded->guessExtension();
-
-                try {
-                    $imageUploaded->move(
-                        $this->getParameter('images_directory'),
-                        $imageTrick
-                    );
-                } catch (FileException $e) {
-                    $this->addFlash('danger', 'Une erreur s\'est prroduite lors du chargment du fichier : ' . $e);
-                    return $this->redirectToRoute('trick_create');
-                }
-
-                $image = new Image();
-                $image->setTrick($trick)
-                        ->setName($imageTrick);
-
+            if ($uploadedImage = $form->get('image')->getData()) {
+                $imageHandler = new ImageHandler();
+                $renamedImage = $imageHandler->renameFile($uploadedImage);
+                $imageHandler->moveFile($uploadedImage, $renamedImage);
+                $image = $imageHandler->setEntity($trick, $renamedImage);
                 $em->persist($image);
             }
 
