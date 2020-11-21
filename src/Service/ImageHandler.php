@@ -2,36 +2,38 @@
 
 namespace App\Service;
 
-use App\Entity\Image;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-
 class ImageHandler
 {
     public const PUBLIC_PATH = 'C:/wamp64/www/oc/OC_P6/public';
+    public const ALLOWED_EXTENSION = ['jpeg', 'jpg', 'png'];
+    public const MIN_PIXEL_HEIGHT = 900;
+    public const MIN_PIXEL_WIDTH = 600;
+    public const MAX_WEIGHT_IN_BYTES = 1024000;
 
-    public function renameFile($file)
+    public function renameFile($fileToRename)
     {
-        $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
-        $fileExtension = strtolower($fileExtension);
-        $renamedFile = uniqid("/uploads/", true) . '.' .$fileExtension;
-        return $renamedFile;
+        $fileExtension = strtolower(pathinfo($fileToRename, PATHINFO_EXTENSION));
+        return uniqid("/uploads/", true) . '.' .$fileExtension;
     }
 
     public function moveFile($file, $renamedFile)
     {
-        try {
-            move_uploaded_file(
-                $file, 
-                self::PUBLIC_PATH . $renamedFile);
-        } catch (FileException $e) {
-            throw ("Une erreur s'est prroduite lors de l'enregistrement du fichier.");
-        }
+        move_uploaded_file($file, self::PUBLIC_PATH . $renamedFile);
     }
 
-    public function setEntity($trick, $renamedImage)
+    public function allowedProperties($file)
     {
-        $image = new Image();
-        $image->setTrick($trick)->setName($renamedImage);
-        return $image;
+        $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $fileSize = getimagesize($file['tmp_name']);
+        $fileWeight = $file['size'];
+
+        if (in_array($fileExtension, self::ALLOWED_EXTENSION)) {
+            if ($fileSize[0] >= self::MIN_PIXEL_HEIGHT && $fileSize[1] >= self::MIN_PIXEL_WIDTH) {
+                if ($fileWeight < self::MAX_WEIGHT_IN_BYTES) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

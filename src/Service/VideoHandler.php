@@ -2,8 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\Video;
-
 class VideoHandler
 {
     public function makeLinkToEmbed(string $link): string
@@ -16,12 +14,5 @@ class VideoHandler
             $embeddingLink = preg_replace('#video#', 'embed/video', $link);
             return $embeddingLink;
         }
-    }
-
-    public function setEntity($trick, $embeddedLink)
-    {
-        $video = new Video();
-        $video->setTrick($trick)->setName($embeddedLink);
-        return $video;
     }
 }

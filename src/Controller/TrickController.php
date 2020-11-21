@@ -2,17 +2,20 @@
 
 namespace App\Controller;
 
+use App\Entity\Image;
 use App\Entity\Trick;
+use App\Entity\Video;
 use App\Entity\Comment;
 use App\Form\TrickType;
 use App\Form\CommentType;
+use App\Service\ImageHandler;
 use App\Service\VideoHandler;
 use App\Repository\TrickRepository;
 use App\Repository\CommentRepository;
-use App\Service\ImageHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class TrickController extends AbstractController
 {
@@ -65,39 +68,44 @@ class TrickController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $title = $form->get('title')->getData();
-
-            $trick->setTitle(strtolower($title))
-                  ->setCreatedAt(new \DateTime())
-                  ->setUpdatedAt(new \DateTime())
-                  ->setDefaultImage('images/default-image.jpg')
-                  ->setUser($this->getUser());
-
-            $em = $this->getDoctrine()->getManager();
-
-            if ($videoLink = $form->get('video')->getData()) {
-                $videoHandler = new VideoHandler();
-                $embeddedLink = $videoHandler->makeLinkToEmbed($videoLink);
-                $video = $videoHandler->setEntity($trick, $embeddedLink);
-                $em->persist($video);
-            }
-
-            if ($uploadedImage = $form->get('image')->getData()) {
-                $imageHandler = new ImageHandler();
-                $renamedImage = $imageHandler->renameFile($uploadedImage);
-                $imageHandler->moveFile($uploadedImage, $renamedImage);
-                $image = $imageHandler->setEntity($trick, $renamedImage);
-                $em->persist($image);
-            }
-
             try {
+                $title = $form->get('title')->getData();
+
+                $trick->setTitle(strtolower($title))
+                    ->setCreatedAt(new \DateTime())
+                    ->setUpdatedAt(new \DateTime())
+                    ->setDefaultImage('images/default-image.jpg')
+                    ->setUser($this->getUser());
+
+                $em = $this->getDoctrine()->getManager();
+
+                if ($videoLink = $form->get('video')->getData()) {
+                    $videoHandler = new VideoHandler();
+                    $embeddedLink = $videoHandler->makeLinkToEmbed($videoLink);
+                    
+                    $video = new Video();
+                    $video->setTrick($trick)->setName($embeddedLink);
+                    $em->persist($video);
+                }
+
+                if ($uploadedImage = $form->get('image')->getData()) {
+                    $imageHandler = new ImageHandler();
+                    $renamedUploadedImage = $imageHandler->renameFile($uploadedImage);
+                    $imageHandler->moveFile($uploadedImage, $renamedUploadedImage);
+                    
+                    $image = new Image();
+                    $image->setTrick($trick)->setName($renamedUploadedImage);
+                    $em->persist($image);
+                }
+
                 $em->persist($trick);
                 $em->flush();
 
                 $this->addFlash('success', 'Votre Trick a bien été enregistré !');
                 return $this->redirectToRoute('home');
+
             } catch (\Exception $e) {
-                $this->addFlash('danger', 'Une erreur s\'est produite durant l\'enregistrement en base de donnée.' . $e);
+                $this->addFlash('danger', "Une erreur est survenue lors de l'enregistrement en base de donnée. $e");
                 return $this->redirectToRoute('home');
             }
         }
@@ -128,15 +136,19 @@ class TrickController extends AbstractController
             if ($videoLink = $form->get('video')->getData()) {
                 $videoHandler = new VideoHandler();
                 $embeddedLink = $videoHandler->makeLinkToEmbed($videoLink);
-                $video = $videoHandler->setEntity($trick, $embeddedLink);
+                
+                $video = new Video();
+                $video->setTrick($trick)->setName($embeddedLink);
                 $em->persist($video);
             }
 
             if ($uploadedImage = $form->get('image')->getData()) {
                 $imageHandler = new ImageHandler();
-                $renamedImage = $imageHandler->renameFile($uploadedImage);
-                $imageHandler->moveFile($uploadedImage, $renamedImage);
-                $image = $imageHandler->setEntity($trick, $renamedImage);
+                $renamedUploadedImage = $imageHandler->renameFile($uploadedImage);
+                $imageHandler->moveFile($uploadedImage, $renamedUploadedImage);
+                
+                $image = new Image();
+                $image->setTrick($trick)->setName($renamedUploadedImage);
                 $em->persist($image);
             }
 
