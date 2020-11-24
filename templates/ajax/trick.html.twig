@@ -18,11 +18,15 @@
                     <a href="{{ path('trick_update', {id: trick.id}) }}" class="card-link">
                         <img height="16px" src="{{ asset('images/icones/edit.png') }}" alt="">
                     </a>
-                    <a href="{{ path('trick_delete', {id: trick.id}) }}" class="card-link">
-                        <img height="18px" src="{{ asset('images/icones/delete.png') }}" alt="">
-                    </a>
+                    <img height="16px" src="{{ asset('images/icones/delete.png') }}"
+                    data-id={{ trick.id }} class="card-link delete-this-trick"
+                    alt="Supprimer le trick">
             {% endif %}
             </div>
         </div>
     </div>
 {% endfor %}
+
+{% block script %}
+    <script src="{{ asset('js/home.js') }}"></script>
+{% endblock %}

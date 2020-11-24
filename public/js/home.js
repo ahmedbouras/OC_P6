@@ -26,3 +26,13 @@ $("#load-more").click(function () {
         $("#load-more").text("Voir plus");
     }
 });
+
+$(".delete-this-trick").click(function() { 
+    let id = $(this).attr("data-id");
+    let choice = confirm("Souhaitez vous supprimer ce trick ?");
+    
+    if (choice) {
+        $(location).attr('href', `/suppression/trick/${id}`);
+    }
+    e.preventDefault();
+});
