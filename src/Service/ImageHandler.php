@@ -10,18 +10,18 @@ class ImageHandler
     public const MIN_PIXEL_WIDTH = 600;
     public const MAX_WEIGHT_IN_BYTES = 1024000;
 
-    public function renameFile($fileToRename)
+    public function renameFile(string $fileToRename): string
     {
         $fileExtension = strtolower(pathinfo($fileToRename, PATHINFO_EXTENSION));
         return uniqid("/uploads/", true) . '.' .$fileExtension;
     }
 
-    public function moveFile($file, $renamedFile)
+    public function moveFile(string $file, string $renamedFile): void
     {
         move_uploaded_file($file, self::PUBLIC_PATH . $renamedFile);
     }
 
-    public function allowedProperties($file)
+    public function allowedProperties(array $file): bool
     {
         $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $fileSize = getimagesize($file['tmp_name']);
@@ -35,5 +35,21 @@ class ImageHandler
             }
         }
         return false;
+    }
+
+    public function makeDataArray($images): array
+    {
+        $imagesArray = [];
+        foreach($images as $images) {
+            $imagesArray[] = $images->getName();
+        }
+        return $imagesArray;
+    }
+
+    public function removeAll(array $images): void
+    {
+        foreach($images as $image) {
+            unlink(self::PUBLIC_PATH . $image);
+        }
     }
 }

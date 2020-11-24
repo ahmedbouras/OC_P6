@@ -12,10 +12,10 @@ use App\Service\ImageHandler;
 use App\Service\VideoHandler;
 use App\Repository\TrickRepository;
 use App\Repository\CommentRepository;
+use App\Repository\ImageRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class TrickController extends AbstractController
 {
@@ -90,9 +90,9 @@ class TrickController extends AbstractController
 
                 if ($uploadedImage = $form->get('image')->getData()) {
                     $imageHandler = new ImageHandler();
-                    $renamedUploadedImage = $imageHandler->renameFile($uploadedImage);
+                    $renamedUploadedImage = $imageHandler->renameFile($uploadedImage->getClientOriginalName());
                     $imageHandler->moveFile($uploadedImage, $renamedUploadedImage);
-                    
+    
                     $image = new Image();
                     $image->setTrick($trick)->setName($renamedUploadedImage);
                     $em->persist($image);
@@ -105,7 +105,7 @@ class TrickController extends AbstractController
                 return $this->redirectToRoute('home');
 
             } catch (\Exception $e) {
-                $this->addFlash('danger', "Une erreur est survenue lors de l'enregistrement en base de donnée. $e");
+                $this->addFlash('danger', "Une erreur est survenue lors de l'enregistrement en base de donnée.");
                 return $this->redirectToRoute('home');
             }
         }
@@ -144,7 +144,7 @@ class TrickController extends AbstractController
 
             if ($uploadedImage = $form->get('image')->getData()) {
                 $imageHandler = new ImageHandler();
-                $renamedUploadedImage = $imageHandler->renameFile($uploadedImage);
+                $renamedUploadedImage = $imageHandler->renameFile($uploadedImage->getClientOriginalName());
                 $imageHandler->moveFile($uploadedImage, $renamedUploadedImage);
                 
                 $image = new Image();
@@ -172,15 +172,20 @@ class TrickController extends AbstractController
     /**
      * @Route("/suppression/trick/{id}", name="trick_delete")
      */
-    public function delete(Trick $trick)
+    public function delete(Trick $trick, ImageRepository $imageRepository)
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
+        $imageHandler = new ImageHandler();
+        $images = $imageHandler->makeDataArray($imageRepository->findAll(['trick' => $trick]));
+        
         try {
             $em =$this->getDoctrine()->getManager();
             $em->remove($trick);
             $em->flush();
-            // TODO: supprimer les images en local
+
+            $imageHandler->removeAll($images);
+            
             $this->addFlash('success', 'Le trick a bien été supprimé !');
             return $this->redirectToRoute('home');
         } catch (\Exception $e) {
