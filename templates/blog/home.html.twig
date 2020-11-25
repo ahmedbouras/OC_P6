@@ -46,7 +46,7 @@
                 </a>
                 <div class="card-body row">
                     <a class="w-75" href="{{ path('trick_show', {title: trick.title}) }}">
-                        <h3>{{ trick.title | capitalize }}</h3>
+                        <h3>{{ trick.title|replace({ '-': ' ', })|capitalize }}</h3>
                     </a>
                     <div class="w-25">
                     {% if app.user %}

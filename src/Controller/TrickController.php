@@ -72,7 +72,7 @@ class TrickController extends AbstractController
                 $title = $form->get('title')->getData();
                 $cleanedTitle = preg_replace('/\s+/', '-', $title);
 
-                $trick->setTitle($cleanedTitle)
+                $trick->setTitle(strtolower($cleanedTitle))
                     ->setCreatedAt(new \DateTime())
                     ->setUpdatedAt(new \DateTime())
                     ->setDefaultImage('images/default-image.jpg')
@@ -128,8 +128,9 @@ class TrickController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $title = $form->get('title')->getData();
+            $cleanedTitle = preg_replace('/\s+/', '-', $title);
 
-            $trick->setTitle(strtolower($title))
+            $trick->setTitle(strtolower($cleanedTitle))
                   ->setUpdatedAt(new \DateTime());
 
             $em = $this->getDoctrine()->getManager();
