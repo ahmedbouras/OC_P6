@@ -37,7 +37,7 @@
                             </a>
                         </div>
 
-                        <h1>{{ form_widget(trickEditForm.title|replace({ '-': ' ', })|capitalize, {
+                        <h1>{{ form_widget(trickEditForm.title, {
                             'attr': {'placeholder': 'Nom du Trick'},
                         }) }}</h1>
                     </div>

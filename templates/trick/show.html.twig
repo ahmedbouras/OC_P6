@@ -42,9 +42,11 @@
                 </div>
             </div>
 
-            <div class="row bloc-see-medias justify-content-center pt-4 pb-4">
-                <div class="btn btn-secondary see-medias">Afficher les médias</div>
-            </div>
+            {% if (trick.images is not empty) or (trick.videos is not empty) %}
+                <div class="row bloc-see-medias justify-content-center pt-4 pb-4">
+                    <div class="btn btn-secondary see-medias">Afficher les médias</div>
+                </div>
+            {% endif %}
 
             <div class="row bloc-img-vids mt-2">
                 <div class="col-12 d-flex flex-wrap justify-content-center">
@@ -111,12 +113,14 @@
                     {% endfor %}
                 </div>
 
-                <div class="col-12 d-flex justify-content-center">
-                    <button type="button" id="load-more" class="btn btn-secondary btn-lg">Voir plus</button>
-                    <input type="hidden" id="offset" value="0">
-                    <input type="hidden" id="total" value="{{ totalComments }}">
-                    <input type="hidden" id="trick" value="{{ trick.id }}">
-                </div>
+                {% if totalComments > 4 %}
+                    <div class="col-12 d-flex justify-content-center">
+                        <button type="button" id="load-more" class="btn btn-secondary btn-lg">Voir plus</button>
+                        <input type="hidden" id="offset" value="0">
+                        <input type="hidden" id="total" value="{{ totalComments }}">
+                        <input type="hidden" id="trick" value="{{ trick.id }}">
+                    </div>
+                {% endif %}
             </div>
 
         </div>
