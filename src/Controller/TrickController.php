@@ -70,8 +70,9 @@ class TrickController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 $title = $form->get('title')->getData();
+                $cleanedTitle = preg_replace('/\s+/', '-', $title);
 
-                $trick->setTitle(strtolower($title))
+                $trick->setTitle($cleanedTitle)
                     ->setCreatedAt(new \DateTime())
                     ->setUpdatedAt(new \DateTime())
                     ->setDefaultImage('images/default-image.jpg')
