@@ -84,8 +84,8 @@
 
     <div class="row bloc-comments mt-5 mb-5">
         <div class="col-8 offset-2">
-            {% for comment in trick.comments | reverse(true) %}
-            <div class="d-flex align-items-center">
+            {% for comment in comments %}
+            <div class="comment-row d-flex align-items-center">
                 <div class="row d-flex justify-content-center text-center mr-4 w-25">
                     <img class="avatar-img" height="40px" src="{{ asset(comment.user.avatar) }}" alt="">
                     <p class="col-12">{{ comment.user.username }}</p>
@@ -94,8 +94,50 @@
             </div>
             {% endfor %}
         </div>
+
+        <div class="col-12 d-flex justify-content-center">
+            <button type="button" id="load-more" class="btn btn-secondary btn-lg">Voir plus</button>
+            <input type="hidden" id="offset" value="0">
+            <input type="hidden" id="total" value="{{ totalComments }}">
+            <input type="hidden" id="trick" value="{{ trick.id }}">
+        </div>
     </div>
 
 </div>
 
+{% endblock %}
+
+{% block script %}
+    <script>
+        $("#load-more").click(function () { 
+            var offset = Number($("#offset").val());
+            var total = Number($("#total").val());
+            var trick = Number($("#trick").val());
+
+            var itemToDisplay = 4;
+            offset += itemToDisplay;
+
+            if (offset <= total) {
+                $("#offset").val(offset);
+                $.ajax({
+                    type: "post",
+                    url: "{{ path('more_comment') }}",
+                    data: {offset:offset, trick:trick},
+                    success: function (response) {
+                        console.log(response);
+                        $(".comment-row:last").after(response).show();
+
+                        var rowno = offset + itemToDisplay;
+                        if (rowno > total) {
+                            $("#load-more").text("Voir moins");
+                        }
+                    }
+                });
+            } else {
+                $(`.comment-row:nth-child(${itemToDisplay})`).nextAll(".comment-row").remove();
+                $("#offset").val(0);
+                $("#load-more").text("Voir plus");
+            }
+        });
+    </script>
 {% endblock %}

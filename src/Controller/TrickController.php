@@ -9,6 +9,7 @@ use App\Entity\Comment;
 use App\Repository\TrickRepository;
 use App\Form\CommentType;
 use App\Form\TrickType;
+use App\Repository\CommentRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,9 +20,13 @@ class TrickController extends AbstractController
     /**
      * @Route("/trick/{title}", name="trick_show")
      */
-    public function trick(Request $request, TrickRepository $trickRepository, $title)
+    public function trick(Request $request, TrickRepository $trickRepository, $title, CommentRepository $commentRepository)
     {
         $trick = $trickRepository->findOneBy(['title' => $title]);
+        $totalComments = count($commentRepository->findBy(['trick' => $trick->getId()]));
+        
+        $limit = 4;
+        $comments = $commentRepository->findByRangeOf(0, $limit, $trick->getId());
 
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);
@@ -43,6 +48,8 @@ class TrickController extends AbstractController
         return $this->render('trick/show.html.twig', [
             'trick' => $trick,
             'commentForm' => $form->createView(),
+            'comments' => $comments,
+            'totalComments' => $totalComments,
         ]);
     }
 

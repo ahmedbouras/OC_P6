@@ -19,6 +19,20 @@ class TrickRepository extends ServiceEntityRepository
         parent::__construct($registry, Trick::class);
     }
 
+    /**
+     * @return Trick[]
+     */
+    public function findByRangeOf($offset, $limit)
+    {
+        $qb = $this->createQueryBuilder('t')
+            ->setFirstResult( $offset )
+            ->setMaxResults( $limit );
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
+
     // /**
     //  * @return Trick[] Returns an array of Trick objects
     //  */

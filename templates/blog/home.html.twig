@@ -59,11 +59,46 @@
         </div>
 
         <div class="d-flex justify-content-center">
-            <button type="button" class="btn btn-secondary btn-lg">Voir plus</button>
+            <button type="button" id="load-more" class="btn btn-secondary btn-lg">Voir plus</button>
+            <input type="hidden" id="offset" value="0">
+            <input type="hidden" id="total" value="{{ totalTricks }}">
         </div>
     </div>
 
     <a href="#list-tricks"><img id="btn-up" src="{{ asset('images/icones/up.png') }}" alt=""></a>
 </section>
 
+{% endblock %}
+
+{% block script %}
+    <script>
+        $("#load-more").click(function () { 
+            var offset = Number($("#offset").val());
+            var total = Number($("#total").val());
+
+            var itemToDisplay = 10;
+            offset += itemToDisplay;
+
+            if (offset <= total) {
+                $("#offset").val(offset);
+                $.ajax({
+                    type: "post",
+                    url: "{{ path('more_trick') }}",
+                    data: {offset:offset},
+                    success: function (response) {
+                        $(".card:last").after(response).show();
+
+                        var rowno = offset + itemToDisplay;
+                        if (rowno > total) {
+                            $("#load-more").text("Voir moins");
+                        }
+                    }
+                });
+            } else {
+                $(`.card:nth-child(${itemToDisplay})`).nextAll(".card").remove();
+                $("#offset").val(0);
+                $("#load-more").text("Voir plus");
+            }
+        });
+    </script>
 {% endblock %}

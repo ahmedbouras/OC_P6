@@ -1,0 +1,9 @@
+{% for comment in comments %}
+    <div class="comment-row d-flex align-items-center">
+        <div class="row d-flex justify-content-center text-center mr-4 w-25">
+            <img class="avatar-img" height="40px" src="{{ asset(comment.user.avatar) }}" alt="">
+            <p class="col-12">{{ comment.user.username }}</p>
+        </div>
+        <p class="comment p-2 w-75">{{ comment.comment|nl2br }}</p>
+    </div>
+{% endfor %}
