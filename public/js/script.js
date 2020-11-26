@@ -1,7 +1,13 @@
 $('.hidden-form').hide();
 
 $('.edit-video').click(function() {
-    let idVideo = $(this).attr('data-id');
+    let id = $(this).attr('data-video');
     $('.hidden-form').hide();
-    $(`.hidden-form[data-id=${idVideo}]`).show();
+    $(`.hidden-form[data-video=${id}]`).show();
+})
+
+$('.edit-image').click(function() {
+    let idimg = $(this).attr('data-img');
+    $('.hidden-form').hide();
+    $(`.hidden-form[data-img=${idimg}]`).show();
 })
