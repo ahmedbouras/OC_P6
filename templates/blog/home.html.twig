@@ -10,6 +10,8 @@
 
 {% block body %}
 
+{% set i = 1 %}
+
 <div id="hero">
     <div id="hero-text">
         <h1 id="hero-title">SnowTricks</h1>
@@ -44,16 +46,17 @@
                 </a>
                 <div class="card-body row">
                     <a class="w-75" href="{{ path('trick_show', {title: trick.title}) }}">
-                        <h3>{{ trick.title | capitalize }}</h3>
+                        <h3>{{ trick.title|replace({ '-': ' ', })|capitalize }}</h3>
                     </a>
                     <div class="w-25">
                     {% if app.user %}
                             <a href="{{ path('trick_update', {id: trick.id}) }}" class="card-link">
-                                <img height="16px" src="{{ asset('images/icones/edit.png') }}" alt="">
+                                <img height="16px" src="{{ asset('images/icones/edit.png') }}" 
+                                alt="Modifier le trick">
                             </a>
-                            <a href="{{ path('trick_delete', {id: trick.id}) }}" class="card-link">
-                                <img height="18px" src="{{ asset('images/icones/delete.png') }}" alt="">
-                            </a>
+                                <img height="16px" src="{{ asset('images/icones/delete.png') }}"
+                                data-id={{ trick.id }} class="card-link delete-this-trick"
+                                alt="Supprimer le trick">
                     {% endif %}
                     </div>
                 </div>
@@ -61,11 +64,13 @@
         {% endfor %}
         </div>
 
-        <div class="d-flex justify-content-center">
-            <button type="button" id="load-more" class="btn btn-secondary btn-lg">Voir plus</button>
-            <input type="hidden" id="offset" value="0">
-            <input type="hidden" id="total" value="{{ totalTricks }}">
-        </div>
+        {% if totalTricks > 10 %}
+            <div class="d-flex justify-content-center">
+                <button type="button" id="load-more" class="btn btn-secondary btn-lg">Voir plus</button>
+                <input type="hidden" id="offset" value="0">
+                <input type="hidden" id="total" value="{{ totalTricks }}">
+            </div>
+        {% endif %}
     </div>
 
     <a href="#list-tricks"><img id="btn-up" src="{{ asset('images/icones/up.png') }}" alt=""></a>

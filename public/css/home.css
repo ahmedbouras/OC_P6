@@ -50,6 +50,10 @@ body {
     right: 2%;
 }
 
+.delete-this-trick:hover {
+    cursor: pointer;
+}
+
 a:link, a:hover, a:visited, a:active {
     color: #373a3c;
     text-decoration: none;

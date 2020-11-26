@@ -38,13 +38,15 @@
                             </a>
                         </button>
                     {% endif %}
-                    <h1>{{ trick.title|capitalize}}</h1>
+                    <h1>{{ trick.title|replace({ '-': ' ', })|capitalize }}</h1>
                 </div>
             </div>
 
-            <div class="row bloc-see-medias justify-content-center pt-4 pb-4">
-                <div class="btn btn-secondary see-medias">Afficher les médias</div>
-            </div>
+            {% if (trick.images is not empty) or (trick.videos is not empty) %}
+                <div class="row bloc-see-medias justify-content-center pt-4 pb-4">
+                    <div class="btn btn-secondary see-medias">Afficher les médias</div>
+                </div>
+            {% endif %}
 
             <div class="row bloc-img-vids mt-2">
                 <div class="col-12 d-flex flex-wrap justify-content-center">
@@ -66,9 +68,7 @@
 
             <div class="row bloc-content mt-5">
                 <div class="col-10 offset-1">
-                    <p>{{ trick.content }} Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe enim odio eum! Recusandae blanditiis est eveniet molestias accusamus quidem, enim atque officiis porro dolorum repudiandae. Dignissimos sint soluta quae earum!
-                    </p>
-                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Explicabo eveniet non iste, quis, soluta consectetur eaque deserunt voluptas earum assumenda numquam laudantium qui maiores quaerat! Mollitia quae ut accusantium facere?Sapiente, maiores enim libero saepe nihil non nam doloribus. Odit, similique aut. Architecto explicabo in rerum, recusandae aperiam ex aut necessitatibus non mollitia laborum quae voluptate corporis molestiae odio dolores.</p>
+                    <p>{{ trick.content }}</p>
                 </div>
             </div>
 
@@ -113,12 +113,14 @@
                     {% endfor %}
                 </div>
 
-                <div class="col-12 d-flex justify-content-center">
-                    <button type="button" id="load-more" class="btn btn-secondary btn-lg">Voir plus</button>
-                    <input type="hidden" id="offset" value="0">
-                    <input type="hidden" id="total" value="{{ totalComments }}">
-                    <input type="hidden" id="trick" value="{{ trick.id }}">
-                </div>
+                {% if totalComments > 4 %}
+                    <div class="col-12 d-flex justify-content-center">
+                        <button type="button" id="load-more" class="btn btn-secondary btn-lg">Voir plus</button>
+                        <input type="hidden" id="offset" value="0">
+                        <input type="hidden" id="total" value="{{ totalComments }}">
+                        <input type="hidden" id="trick" value="{{ trick.id }}">
+                    </div>
+                {% endif %}
             </div>
 
         </div>

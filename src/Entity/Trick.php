@@ -24,6 +24,10 @@ class Trick
      * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotNull
      * @Assert\NotBlank
+     * @Assert\Regex(
+     *     pattern="/^[a-zA-Z0-9 ]+$/",
+     *     message="Le titre ne doit contenir que des caractères alphanumériques et être séparé par des espaces."
+     * )
      */
     private $title;
 
