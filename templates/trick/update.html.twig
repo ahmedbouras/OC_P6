@@ -34,15 +34,15 @@
     <div class="row bloc-img-vids mt-2">
         <div class="col-12 d-flex flex-wrap justify-content-center">
             {% for image in trick.images %}
-                <div class="card mr-2 mb-2">
+                <div class="card mr-2 mb-2" data-img="{{ image.id }}">
                     <a href="{{ image.name }}" target="_blank">
                         <img src="{{ image.name }}" alt="" style="height: 150px; width: 230px;">
                     </a>
 
                     {% if app.user %}
-                    <div class="card-body d-flex justify-content-end pr-0">
+                    <div class="card-body d-flex align-items-start justify-content-end pr-0">
                         <div class="btn-media p-1">
-                            <img data-img="{{ image.id }}" class="card-link edit-image" height="16px" src="{{ asset('images/icones/edit.png') }}" alt="bouton de modification">
+                            <img data-img="{{ image.id }}" data-trick="{{ trick.id }}" class="card-link edit-image" height="16px" src="{{ asset('images/icones/edit.png') }}" alt="bouton de modification">
                             <a href="{{ path('image_delete', {id: image.id, trickId: trick.id}) }}" class="card-link">
                                 <img height="18px" src="{{ asset('images/icones/delete.png') }}" alt="bouton de suppression">
                             </a>
@@ -50,39 +50,24 @@
                     </div>
                     {% endif %}
 
-                    <div data-img="{{ image.id }}" class="hidden-form card-body p-0">
-                        <form class="d-flex flex-column" enctype="multipart/form-data" action="{{ path('image_update', {id: image.id, trickId: trick.id}) }}" method="post">
-                            <input name="newImg" type="file" id="fichier_a_uploader" />
-                            <button type="submit">Modifier l'image</button>
-                        </form>
-                    </div>
-
                 </div>
             {% endfor %}
 
             {% for video in trick.videos %}
-                <div class="card mr-2 mb-2 edit-img-vid" style="width:230px;">
+                <div data-video="{{ video.id }}" class="card mr-2 mb-2 edit-img-vid" style="width:230px;">
                     <iframe src="{{ video.name }}" allow="fullscreen" style="height:150px"></iframe>
                     
                         {% if app.user %}
-                        <div class="card-body d-flex justify-content-end pr-0">
+                        <div class="card-body d-flex align-items-start justify-content-end pr-0">
                             <div class="btn-media p-1">
-                                <img data-video="{{ video.id }}" class="card-link edit-video" height="16px" src="{{ asset('images/icones/edit.png') }}" alt="bouton de modification">
+                                <img data-video="{{ video.id }}" data-trick="{{ trick.id }}" class="card-link edit-video" height="16px" src="{{ asset('images/icones/edit.png') }}" alt="bouton de modification">
                                 <a href="{{ path('video_delete', {id: video.id, trickId: trick.id}) }}" class="card-link">
                                     <img height="18px" src="{{ asset('images/icones/delete.png') }}" alt="bouton de suppression">
                                 </a>
                             </div>
                         </div>
                         {% endif %}
-                    
-                    {# <div data-video="{{ video.id }}" class="hidden-form card-body p-0">
-                        <form class="d-flex flex-column" method="post" action="{{ path('video_update', {id: video.id, trickId: trick.id}) }}">
-                            <div class="form-group">
-                                <input class="form-control mb-1" type="text" name="newUrl">
-                                <button type="submit">Modifier la vidéo</button>
-                            </div>
-                        </form>
-                    </div> #}
+
                 </div>
             {% endfor %}
         </div>
