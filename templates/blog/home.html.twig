@@ -1,6 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ parent() }}{% endblock %}
+{% block title %}
+    {{ parent() }}
+{% endblock %}
+
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
 {% endblock %}
@@ -29,7 +32,7 @@
         <div class="row justify-content-center">
 
         {% for trick in tricks %}
-            <div class="card col-2">
+            <div class="card col-10 col-md-4 col-lg-2 ">
                 <a href="{{ path('trick_show', {title: trick.title}) }}">
                 {% if trick.mainImage != null %}
                     <img style="height: 200px; width: 100%; display: block;" src="{{ asset(trick.mainImage)}}" alt="Card image">
@@ -71,34 +74,5 @@
 {% endblock %}
 
 {% block script %}
-    <script>
-        $("#load-more").click(function () { 
-            var offset = Number($("#offset").val());
-            var total = Number($("#total").val());
-
-            var itemToDisplay = 10;
-            offset += itemToDisplay;
-
-            if (offset <= total) {
-                $("#offset").val(offset);
-                $.ajax({
-                    type: "post",
-                    url: "{{ path('more_trick') }}",
-                    data: {offset:offset},
-                    success: function (response) {
-                        $(".card:last").after(response).show();
-
-                        var rowno = offset + itemToDisplay;
-                        if (rowno > total) {
-                            $("#load-more").text("Voir moins");
-                        }
-                    }
-                });
-            } else {
-                $(`.card:nth-child(${itemToDisplay})`).nextAll(".card").remove();
-                $("#offset").val(0);
-                $("#load-more").text("Voir plus");
-            }
-        });
-    </script>
+    <script src="{{ asset('js/home.js') }}"></script>
 {% endblock %}

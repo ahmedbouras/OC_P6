@@ -1,6 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ parent() }} | Creation d'un trick{% endblock %}
+{% block title %}
+    {{ parent() }} | Creation d'un trick
+{% endblock %}
+
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/updateTrick.css') }}">
 {% endblock %}
@@ -9,131 +12,149 @@
 
 {% block body %}
 
-<div class="container">
-
-    {{ form_start(trickEditForm) }}
+<div class="container-fluid">
     <div class="row">
-        <div class="bloc-title m-0 p-0 col-12">
-            {% if trick.mainImage != null %}
-                <img id="main-image" src="{{ asset(trick.mainImage)}}" alt="">
-            {% elseif trick.images|length > 0 %}
-                <img id="main-image" src="{{ asset(trick.images[0].name )}}" alt="">
-            {% else %}
-                <img id="main-image" src="{{ asset('images/default-image.jpg')}}" alt="">
-            {% endif %}
+        <div class="offset-1 col-10 offset-md-2 col-md-8 outline-bloc">
 
-            <div id="update-btn" class="p-1">
-                <img id="edit-main-image" class="mr-3" data-id="{{ trick.id }}" height="16px" src="{{ asset('images/icones/edit.png') }}" alt="">
-                <a href="{{ path('main_image_delete', {id: trick.id}) }}">
-                    <img height="18px" src="{{ asset('images/icones/delete.png') }}" alt="">
-                </a>
-            </div>
-
-            <h1>{{ form_widget(trickEditForm.title, {
-                'attr': {'placeholder': 'Nom du Trick'},
-            }) }}
-            </h1>
-        </div>
-        <p>{{ form_errors(trickEditForm.title) }}</p>
-    </div>
-
-    <div class="row bloc-img-vids mt-2">
-        <div class="col-12 d-flex flex-wrap justify-content-center">
-            {% for image in trick.images %}
-                <div class="card mr-2 mb-2" data-img="{{ image.id }}">
-                    <a href="{{ image.name }}" target="_blank">
-                        <img src="{{ image.name }}" alt="" style="height: 150px; width: 230px;">
-                    </a>
-
-                    {% if app.user %}
-                    <div class="card-body d-flex align-items-start justify-content-end pr-0">
-                        <div class="btn-media p-1">
-                            <img data-img="{{ image.id }}" data-trick="{{ trick.id }}" class="card-link edit-image" height="16px" src="{{ asset('images/icones/edit.png') }}" alt="bouton de modification">
-                            <a href="{{ path('image_delete', {id: image.id, trickId: trick.id}) }}" class="card-link">
-                                <img height="18px" src="{{ asset('images/icones/delete.png') }}" alt="bouton de suppression">
-                            </a>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                </div>
-            {% endfor %}
-
-            {% for video in trick.videos %}
-                <div data-video="{{ video.id }}" class="card mr-2 mb-2 edit-img-vid" style="width:230px;">
-                    <iframe src="{{ video.name }}" allow="fullscreen" style="height:150px"></iframe>
-                    
-                        {% if app.user %}
-                        <div class="card-body d-flex align-items-start justify-content-end pr-0">
-                            <div class="btn-media p-1">
-                                <img data-video="{{ video.id }}" data-trick="{{ trick.id }}" class="card-link edit-video" height="16px" src="{{ asset('images/icones/edit.png') }}" alt="bouton de modification">
-                                <a href="{{ path('video_delete', {id: video.id, trickId: trick.id}) }}" class="card-link">
-                                    <img height="18px" src="{{ asset('images/icones/delete.png') }}" alt="bouton de suppression">
-                                </a>
-                            </div>
-                        </div>
+            {{ form_start(trickEditForm) }}
+                <div class="row">
+                    <div class="bloc-title m-0 p-0 col-12">
+                        {% if trick.mainImage != null %}
+                            <img id="main-image" src="{{ asset(trick.mainImage)}}" alt="image à la une">
+                        {% elseif trick.images|length > 0 %}
+                            <img id="main-image" src="{{ asset(trick.images[0].name )}}" alt="image à la une">
+                        {% else %}
+                            <img id="main-image" src="{{ asset('images/default-image.jpg')}}" alt="image à la une">
                         {% endif %}
 
+                        <div id="update-btn" class="p-1">
+                            <img id="edit-main-image" class="mr-3" data-id="{{ trick.id }}" height="16px" 
+                            src="{{ asset('images/icones/edit.png') }}" alt="modifier le trick">
+                            
+                            <a href="{{ path('main_image_delete', {id: trick.id}) }}">
+                                <img height="18px" src="{{ asset('images/icones/delete.png') }}" 
+                                alt="supprimer le trick">
+                            </a>
+                        </div>
+
+                        <h1>{{ form_widget(trickEditForm.title, {
+                            'attr': {'placeholder': 'Nom du Trick'},
+                        }) }}</h1>
+                    </div>
+
+                    <p>{{ form_errors(trickEditForm.title) }}</p>
+                
                 </div>
-            {% endfor %}
-        </div>
-    </div>
 
-    <div class="row input-img-vids mt-2">
-        <div class="col-12">
-            <div class="row">
-                <div class="col-6">
-                    {{ form_widget(trickEditForm.image) }}
-                    {{ form_errors(trickEditForm.image) }}
+                <div class="row bloc-see-medias justify-content-center pt-4 pb-4">
+                    <div class="btn btn-secondary see-medias">Afficher les médias</div>
                 </div>
-                <div class="col-6">
-                    {{ form_widget(trickEditForm.video) }}
-                    {{ form_errors(trickEditForm.video) }}
+
+                <div class="row bloc-img-vids mt-2">
+                    <div class="col-12 d-flex flex-wrap justify-content-center">
+                        {% for image in trick.images %}
+                            <div class="card mr-2 mb-2" data-img="{{ image.id }}">
+                                <a href="{{ image.name }}" target="_blank">
+                                    <img src="{{ image.name }}" style="height: 150px; width: 230px;"
+                                    alt="image associés">
+                                </a>
+
+                                {% if app.user %}
+                                <div class="card-body d-flex align-items-start justify-content-end pr-0">
+                                    <div class="btn-media p-1">
+                                        <img class="card-link edit-image" height="16px"
+                                        data-img="{{ image.id }}" data-trick="{{ trick.id }}"  
+                                        src="{{ asset('images/icones/edit.png') }}" alt="modifier l'image">
+                                        
+                                        <a href="{{ path('image_delete', {id: image.id, trickId: trick.id}) }}"
+                                        class="card-link">
+                                            <img src="{{ asset('images/icones/delete.png') }}"
+                                            height="18px" alt="supprimer l'image">
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                            </div>
+                        {% endfor %}
+
+                        {% for video in trick.videos %}
+                            <div class="card mr-2 mb-2 edit-img-vid" data-video="{{ video.id }}" style="width:230px;">
+                                <iframe src="{{ video.name }}" allow="fullscreen" style="height:150px"></iframe>
+                                
+                                    <div class="card-body d-flex align-items-start justify-content-end pr-0">
+                                        <div class="btn-media p-1">
+                                            <img data-video="{{ video.id }}" data-trick="{{ trick.id }}" class="card-link edit-video" height="16px"
+                                            src="{{ asset('images/icones/edit.png') }}" alt="modifier la vidéo">
+                                            
+                                            <a href="{{ path('video_delete', {id: video.id, trickId: trick.id}) }}" class="card-link">
+                                                <img height="18px" src="{{ asset('images/icones/delete.png') }}" alt="supprimer la vidéo">
+                                            </a>
+                                        </div>
+                                    </div>
+
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
-            </div>
+
+                <div class="row input-img-vids mt-2 hidden-xs-to-md">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-6">
+                                {{ form_widget(trickEditForm.image) }}
+                                {{ form_errors(trickEditForm.image) }}
+                            </div>
+                            <div class="col-6">
+                                {{ form_widget(trickEditForm.video) }}
+                                {{ form_errors(trickEditForm.video) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row bloc-infos mt-5">
+                    <div class="col-12 offset-md-2 col-md-8 d-flex">
+                        <p class="mr-5">Date de création : {{ trick.createdAt | date("d/m/Y") }}</p>
+                            {% if trick.createdAt != trick.updatedAt %}
+                                <p>Date de modification : {{ trick.updatedAt | date("d/m/Y") }}</p>
+                            {% endif %}
+                    </div>
+                </div>
+
+                <div class="row bloc-content mt-5">
+                    <div class="col-12 offset-md-2 col-md-8">
+                        {{ form_widget(trickEditForm.content, {
+                            'attr': {'placeholder': 'Description du Trick'},
+                        }) }}
+                        {{ form_errors(trickEditForm.content) }}
+                    </div>
+                </div>
+
+                <div class="row bloc-category mt-5">
+                    <div class="col-6 offset-md-2 col-md-4 offset-lg-2 col-lg-3">
+                        {{ form_widget(trickEditForm.category) }}
+                        {{ form_errors(trickEditForm.category) }}
+                    </div>
+                </div>
+
+                <div class="row bloc-button mt-5 mb-5">
+                    <div class="col-10 col-md-8 offset-md-2 d-flex justify-content-end">
+                        {% if app.user %}
+                            <a href="{{ path('trick_delete', {id: trick.id}) }}"
+                            class="btn btn-danger mr-2">Supprimer</a>
+                            <button type="submit" class="btn btn-secondary">Enregistrer</button>
+                        {% endif %}
+                    </div>
+                </div>
+            {{ form_end(trickEditForm) }}
+
         </div>
     </div>
-
-    <div class="row bloc-infos mt-5">
-        <div class="col-8 offset-2 d-flex">
-            <p class="mr-5">Date de création : {{ trick.createdAt | date("d/m/Y") }}</p>
-            {% if trick.createdAt != trick.updatedAt %}
-                <p>Date de modification : {{ trick.updatedAt | date("d/m/Y") }}</p>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="row bloc-content mt-5">
-        <div class="col-8 offset-2">
-            {{ form_widget(trickEditForm.content, {
-                'attr': {'placeholder': 'Description du Trick'},
-            }) }}
-            {{ form_errors(trickEditForm.content) }}
-        </div>
-    </div>
-
-    <div class="row bloc-category mt-5">
-        <div class="col-2 offset-2">
-            {{ form_widget(trickEditForm.category) }}
-            {{ form_errors(trickEditForm.category) }}
-        </div>
-    </div>
-
-        <div class="row bloc-button mt-5 mb-5">
-            <div class="col-8 offset-2 d-flex justify-content-end">
-                {% if app.user %}
-                    <a href="{{ path('trick_delete', {id: trick.id}) }}" class="btn btn-danger mr-2">Supprimer</a>
-                    <button type="submit" class="btn btn-secondary">Enregistrer</button>
-                {% endif %}
-            </div>
-        </div>
-
-    {{ form_end(trickEditForm) }}
-
 </div>
 
 {% endblock %}
 
 {% block script %}
-    <script src="{{ asset('js/script.js') }}"></script>
+    <script src="{{ asset('js/update-trick.js') }}"></script>
 {% endblock %}

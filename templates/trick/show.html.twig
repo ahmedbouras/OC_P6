@@ -1,6 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ parent() }} | {{ trick.title | capitalize}}{% endblock %}
+{% block title %}
+    {{ parent() }} | {{ trick.title | capitalize}}
+{% endblock %}
+
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/trick.css') }}">
 {% endblock %}
@@ -9,135 +12,121 @@
 
 {% block body %}
 
-<div class="container">
-
+<div class="container-fluid">
     <div class="row">
-        <div class="bloc-title m-0 p-0 col-12">
-            {% if trick.mainImage != null %}
-                <img id="main-image" src="{{ asset(trick.mainImage)}}" alt="">
-            {% elseif trick.images|length > 0 %}
-                <img id="main-image" src="{{ asset(trick.images[0].name )}}" alt="">
-            {% else %}
-                <img id="main-image" src="{{ asset('images/default-image.jpg')}}" alt="">
-            {% endif %}
+        <div class="offset-1 col-10 offset-md-2 col-md-8 outline-bloc">
+            
+            <div class="row">
+                <div class="bloc-title m-0 p-0 col-12">
+                    {% if trick.mainImage != null %}
+                        <img id="main-image" src="{{ asset(trick.mainImage)}}" alt="image à la une">
+                    {% elseif trick.images|length > 0 %}
+                        <img id="main-image" src="{{ asset(trick.images[0].name )}}" alt="image à la une">
+                    {% else %}
+                        <img id="main-image" src="{{ asset('images/default-image.jpg')}}" alt="image à la une">
+                    {% endif %}
 
-            {% if app.user %}
-                <button id="update-btn">
-                    <a href="{{ path('trick_update', {id: trick.id}) }}" class="mr-3"><img height="16px" src="{{ asset('images/icones/edit.png') }}" alt=""></a>
-                    <a href="{{ path('trick_delete', {id: trick.id}) }}"><img height="18px" src="{{ asset('images/icones/delete.png') }}" alt=""></a>
-                </button>
-            {% endif %}
-            <h1>{{ trick.title | capitalize}}</h1>
-        </div>
-    </div>
-
-    <div class="row bloc-img-vids mt-2">
-        <div class="col-12 d-flex flex-wrap justify-content-center">
-            {% for image in trick.images %}
-                <div class="mr-2">
-                    <a href="{{ image.name }}" target="_blank">
-                        <img src="{{ image.name }}" alt="" style="height:150px; width:230px;">
-                    </a>
+                    {% if app.user %}
+                        <button id="update-btn">
+                            <a href="{{ path('trick_update', {id: trick.id}) }}" class="mr-3">
+                                <img height="16px" src="{{ asset('images/icones/edit.png') }}" 
+                                alt="modification du trick">
+                            </a>
+                            <a href="{{ path('trick_delete', {id: trick.id}) }}">
+                                <img height="18px" src="{{ asset('images/icones/delete.png') }}" 
+                                alt="suppression du trick">
+                            </a>
+                        </button>
+                    {% endif %}
+                    <h1>{{ trick.title|capitalize}}</h1>
                 </div>
-            {% endfor %}
-            {% for video in trick.videos %}
-                <div class="video mr-2">
-                    <iframe src="{{ video.name }}" allow="fullscreen" style="border:none; height:150px; width:230px;"></iframe> 
+            </div>
+
+            <div class="row bloc-see-medias justify-content-center pt-4 pb-4">
+                <div class="btn btn-secondary see-medias">Afficher les médias</div>
+            </div>
+
+            <div class="row bloc-img-vids mt-2">
+                <div class="col-12 d-flex flex-wrap justify-content-center">
+                    {% for image in trick.images %}
+                        <div class="mr-md-2 mb-2">
+                            <a href="{{ image.name }}" target="_blank">
+                                <img src="{{ image.name }}" alt="" style="height:150px; width:230px;">
+                            </a>
+                        </div>
+                    {% endfor %}
+                    {% for video in trick.videos %}
+                        <div class="video mr-md-2">
+                            <iframe src="{{ video.name }}" allow="fullscreen" 
+                            style="border:none; height:150px; width:230px;"></iframe> 
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div class="row bloc-content mt-5">
-        <div class="col-10 offset-1">
-            <p>{{ trick.content }} Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe enim odio eum! Recusandae blanditiis est eveniet molestias accusamus quidem, enim atque officiis porro dolorum repudiandae. Dignissimos sint soluta quae earum!
-            </p>
-            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Explicabo eveniet non iste, quis, soluta consectetur eaque deserunt voluptas earum assumenda numquam laudantium qui maiores quaerat! Mollitia quae ut accusantium facere?Sapiente, maiores enim libero saepe nihil non nam doloribus. Odit, similique aut. Architecto explicabo in rerum, recusandae aperiam ex aut necessitatibus non mollitia laborum quae voluptate corporis molestiae odio dolores.</p>
-        </div>
-    </div>
-
-    <div class="row bloc-infos mt-5">
-        <div class="col-8 offset-2 d-flex justify-content-around">
-            <p>Date de création : {{ trick.createdAt | date("d/m/Y") }}</p>
-            {% if trick.createdAt != trick.updatedAt %}
-                <p>Date de modification : {{ trick.updatedAt | date("d/m/Y") }}</p>
-            {% endif %}
-            <p>Catégories : <span class="badge badge-pill badge-secondary">{{ trick.category.name }}</span>
-            </p>
-        </div>
-    </div>
-    <hr>
-    
-    {% if app.user %}
-        {{ form_start(commentForm) }}
-        <div class="row d-flex justify-content-center align-items-center bloc-form mt-5 mb-5">
-            <div class="col-5">
-                {{ form_widget(commentForm.comment) }}
             </div>
-            <div>
-                <button type="submit" class="btn btn-secondary">Laisser un commentaire</button>
-            </div>
-        </div>
-        {{ form_end(commentForm) }}
-        <hr>
-    {% endif %}
 
-    <div class="row bloc-comments mt-5 mb-5">
-        <div class="col-8 offset-2">
-            {% for comment in comments %}
-            <div class="comment-row d-flex align-items-center">
-                <div class="row d-flex justify-content-center text-center mr-4 w-25">
-                    <img class="avatar-img" height="40px" src="{{ asset(comment.user.avatar) }}" alt="">
-                    <p class="col-12">{{ comment.user.username }}</p>
+            <div class="row bloc-content mt-5">
+                <div class="col-10 offset-1">
+                    <p>{{ trick.content }} Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe enim odio eum! Recusandae blanditiis est eveniet molestias accusamus quidem, enim atque officiis porro dolorum repudiandae. Dignissimos sint soluta quae earum!
+                    </p>
+                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Explicabo eveniet non iste, quis, soluta consectetur eaque deserunt voluptas earum assumenda numquam laudantium qui maiores quaerat! Mollitia quae ut accusantium facere?Sapiente, maiores enim libero saepe nihil non nam doloribus. Odit, similique aut. Architecto explicabo in rerum, recusandae aperiam ex aut necessitatibus non mollitia laborum quae voluptate corporis molestiae odio dolores.</p>
                 </div>
-                <p class="comment p-2 w-75">{{ comment.comment|nl2br }}</p>
             </div>
-            {% endfor %}
-        </div>
 
-        <div class="col-12 d-flex justify-content-center">
-            <button type="button" id="load-more" class="btn btn-secondary btn-lg">Voir plus</button>
-            <input type="hidden" id="offset" value="0">
-            <input type="hidden" id="total" value="{{ totalComments }}">
-            <input type="hidden" id="trick" value="{{ trick.id }}">
+            <div class="row bloc-infos mt-5">
+                <div class="offset-md-2 col-md-8 d-flex justify-content-around">
+                    <p>Date de création : {{ trick.createdAt | date("d/m/Y") }}</p>
+                        {% if trick.createdAt != trick.updatedAt %}
+                            <p>Date de modification : {{ trick.updatedAt | date("d/m/Y") }}</p>
+                        {% endif %}
+                    <p>Catégories : <span class="badge badge-pill badge-secondary">{{ trick.category.name }}</span>
+                    </p>
+                </div>
+            </div>
+            <hr>
+        
+            <div class="hidden-xs-to-md">
+                {% if app.user %}
+                    {{ form_start(commentForm) }}
+                        <div class="row d-flex justify-content-center align-items-center bloc-form mt-5 mb-5">
+                            <div class="col-5">
+                                {{ form_widget(commentForm.comment) }}
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-secondary">Laisser un commentaire</button>
+                            </div>
+                        </div>
+                    {{ form_end(commentForm) }}
+                    <hr>
+                {% endif %}
+            </div>
+
+            <div class="row bloc-comments mt-5 mb-5">
+                <div class="offset-lg-2 col-lg-8">
+                    {% for comment in comments %}
+                        <div class="comment-row d-flex align-items-center">
+                            <div class="row d-flex justify-content-center text-center mr-4 w-25">
+                                <img class="avatar-img" height="40px" src="{{ asset(comment.user.avatar) }}" alt="">
+                                <p class="col-12">{{ comment.user.username }}</p>
+                            </div>
+                            <p class="comment p-2 w-75">{{ comment.comment|nl2br }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-12 d-flex justify-content-center">
+                    <button type="button" id="load-more" class="btn btn-secondary btn-lg">Voir plus</button>
+                    <input type="hidden" id="offset" value="0">
+                    <input type="hidden" id="total" value="{{ totalComments }}">
+                    <input type="hidden" id="trick" value="{{ trick.id }}">
+                </div>
+            </div>
+
         </div>
     </div>
-
 </div>
 
 {% endblock %}
 
 {% block script %}
-    <script>
-        $("#load-more").click(function () { 
-            var offset = Number($("#offset").val());
-            var total = Number($("#total").val());
-            var trick = Number($("#trick").val());
-
-            var itemToDisplay = 4;
-            offset += itemToDisplay;
-
-            if (offset <= total) {
-                $("#offset").val(offset);
-                $.ajax({
-                    type: "post",
-                    url: "{{ path('more_comment') }}",
-                    data: {offset:offset, trick:trick},
-                    success: function (response) {
-                        console.log(response);
-                        $(".comment-row:last").after(response).show();
-
-                        var rowno = offset + itemToDisplay;
-                        if (rowno > total) {
-                            $("#load-more").text("Voir moins");
-                        }
-                    }
-                });
-            } else {
-                $(`.comment-row:nth-child(${itemToDisplay})`).nextAll(".comment-row").remove();
-                $("#offset").val(0);
-                $("#load-more").text("Voir plus");
-            }
-        });
-    </script>
+    <script src="{{ asset('js/show-trick.js') }}"></script>
 {% endblock %}
