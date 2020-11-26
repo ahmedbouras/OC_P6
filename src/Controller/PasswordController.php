@@ -47,7 +47,7 @@ class PasswordController extends AbstractController
                 ->from('no-reply@snowtricks.com')
                 ->to($user->getEmail())
                 ->subject('Réinitialisation mot de passe')
-                ->htmlTemplate('password/reset.html.twig')
+                ->htmlTemplate('email/reset.html.twig')
                 ->context([
                     'token' => $user->getResetToken(),
                 ]);
@@ -58,7 +58,7 @@ class PasswordController extends AbstractController
             return $this->redirectToRoute('app_forgot_pass');
         }
 
-        return $this->render('password/forgotPass.html.twig', [
+        return $this->render('password/forgot.html.twig', [
             'forgotForm' => $form->createView(),
         ]);
     }
@@ -96,7 +96,7 @@ class PasswordController extends AbstractController
             return $this->redirectToRoute('home');
         }
 
-        return $this->render('password/resetPass.html.twig', [
+        return $this->render('password/reinitialization.html.twig', [
             'resetForm' => $form->createView(),
         ]);
     }
