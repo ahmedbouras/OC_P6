@@ -31,7 +31,13 @@
         {% for trick in tricks %}
             <div class="card col-2">
                 <a href="{{ path('trick_show', {title: trick.title}) }}">
-                    <img style="height: 200px; width: 100%; display: block;" src="{{ trick.defaultImage }}" alt="Card image">
+                {% if trick.mainImage != null %}
+                    <img style="height: 200px; width: 100%; display: block;" src="{{ asset(trick.mainImage)}}" alt="Card image">
+                {% elseif trick.images|length > 0 %}
+                    <img style="height: 200px; width: 100%; display: block;" src="{{ asset(trick.images[0].name )}}" alt="Card image">
+                {% else %}
+                    <img style="height: 200px; width: 100%; display: block;" src="{{ asset('images/default-image.jpg')}}" alt="Card image">
+                {% endif %}
                 </a>
                 <div class="card-body row">
                     <a class="w-75" href="{{ path('trick_show', {title: trick.title}) }}">
