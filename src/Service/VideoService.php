@@ -2,9 +2,25 @@
 
 namespace App\Service;
 
-class VideoHandler
+use App\Entity\Video;
+
+class VideoService
 {
-    public function makeLinkToEmbed(string $link): string
+    public const REGEX_VIDEO = '#^(https://www.(youtube|dailymotion).com)#';
+
+    public function setNewVideo($link, $trick)
+    {
+        $video = new Video();
+        $video->setTrick($trick)->setName($link);
+        return $video;
+    }
+
+    public function isSourceAllowed($link)
+    {
+        return preg_match(self::REGEX_VIDEO, $link);
+    }
+
+    public function makeLinkToEmbed($link)
     {
         if (preg_match('#youtube#', $link)) {
             $splitedLink = preg_split('#&#', $link);
