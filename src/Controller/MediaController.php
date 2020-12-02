@@ -101,10 +101,10 @@ class MediaController extends AbstractController
             try {
                 $newImage = $_FILES['newImg'];
                 $mediaHandler = new MediaHandler();
-                $image = $mediaHandler->editImage($newImage, $image);
+                $updatedimage = $mediaHandler->editImage($newImage, $image);
 
                 $em = $this->getDoctrine()->getManager();
-                $em->persist($image);
+                $em->persist($updatedimage);
                 $em->flush();
 
                 unlink(self::PUBLIC_PATH . $oldImage);
@@ -114,8 +114,8 @@ class MediaController extends AbstractController
             } 
         } else {
             $this->addFlash('warning', "Aucune image n'a été chargé.");
-            return $this->redirectToRoute('trick_update', ['id' => $trickId]);
         }
+        return $this->redirectToRoute('trick_update', ['id' => $trickId]);
     }
 
     /**
@@ -126,37 +126,26 @@ class MediaController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $oldImage = $trick->getMainImage() !== null ? $trick->getMainImage() : null;
-        if (!empty($_FILES['mainImage']['name'])) {
-            $imageHandler = new ImageHandler();
-
-            if($imageHandler->allowedProperties($_FILES['mainImage'])) {
-                try {
-                    $renamedUploadedImage = $imageHandler->renameFile($_FILES['mainImage']['name']);
-                    $imageHandler->moveFile($_FILES['mainImage']['tmp_name'], $renamedUploadedImage);
-                    $trick->setMainImage($renamedUploadedImage);
-
-                    $em = $this->getDoctrine()->getManager();
-                    $em->persist($trick);
-                    $em->flush();
         
-                    $oldImage ? unlink(self::PUBLIC_PATH . $oldImage): null;
+        if (isset($_FILES['mainImage']['name']) && !empty($_FILES['mainImage']['name'])) {
+            try {
+                $newImage = $_FILES['mainImage'];
+                $mediaHandler = new MediaHandler();
+                $image = $mediaHandler->editMainImage($newImage, $trick);
 
-                    $this->addFlash('success', 'Votre image a bien été enregistré !');
-                    return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($image);
+                $em->flush();
 
-                } catch (FileException $e) {
-                    $this->addFlash('danger', "Une erreur s'est produite lors de l'enregistrement de l'image.");
-                    return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
-                }
-            } else {
-                $this->addFlash('warning', "Veuillez respecter ces conditions : 
-                Extensions autorisées : jpeg/jpg/png. Taille minimum : 900x600px. Poids maximum : 1024ko");
-                return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
-            }
+                $oldImage ? unlink(self::PUBLIC_PATH . $oldImage): null;
+                $this->addFlash('success', 'Votre image a bien été enregistré !');
+            } catch (Exception $e) {
+                $this->addFlash('danger', "Une erreur s'est produite lors de l'enregistrement de l'image principale.");
+            } 
         } else {
             $this->addFlash('warning', "Aucune image n'a été chargé.");
-            return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
         }
+        return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
     }
 
     /**

@@ -54,4 +54,16 @@ class MediaHandler
         return $editedImage;
 
     }
+
+    public function editMainImage(array $newMainImage, object $trick): object
+    {
+        if (!$this->imageService->allowedProperties($newMainImage)) {
+            throw new Exception("Veuillez respecter ces conditions : 
+            Extensions autorisées : jpeg/jpg/png. Taille minimum : 900x600px. Poids maximum : 1024ko");
+        }
+        $renamedNewMainImage = $this->imageService->renameFile($newMainImage['name']);
+        $this->imageService->moveFile($newMainImage['tmp_name'], $renamedNewMainImage);
+        $editedImage = $trick->setMainImage($renamedNewMainImage);
+        return $editedImage;
+    }
 }
