@@ -196,14 +196,13 @@ class MediaController extends AbstractController
                 unlink(self::PUBLIC_PATH . $oldImage);
     
                 $this->addFlash('success', "L'image principale a bien été supprimé !");
-                return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
             } catch (\Exception $e) {
-                $this->addFlash('danger', "Une erreur s'est produite durant la suppression de l'image.");
-                return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+                $this->addFlash('danger', "Une erreur s'est produite lors de la suppression de l'image principale.");
             }
         } else {
             $this->addFlash('warning', "Aucune image principale à supprimer.");
-            return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+            
         }
+        return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
     }
 }
