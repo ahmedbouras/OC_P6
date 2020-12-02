@@ -11,11 +11,7 @@ class AjaxController extends AbstractController
 {
     private const TRICK_LIMIT = 10;
     private const COMMENT_LIMIT = 4;
-
-    public function __construct()
-    {
-        
-    }
+    
     /**
      * @Route("/more-trick", name="more_trick")
      */
