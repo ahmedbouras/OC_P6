@@ -3,16 +3,11 @@
 namespace App\Controller;
 
 use Exception;
-use App\Entity\Image;
 use App\Entity\Trick;
-use App\Entity\Video;
 use App\Entity\Comment;
 use App\Form\TrickType;
 use App\Form\CommentType;
-use App\Handler\MediaHandler;
 use App\Handler\TrickHandler;
-use App\Service\ImageHandler;
-use App\Service\VideoHandler;
 use App\Repository\ImageRepository;
 use App\Repository\TrickRepository;
 use App\Repository\CommentRepository;
@@ -73,7 +68,7 @@ class TrickController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             try {
                 $trickHandler = new TrickHandler($entityManager);
-                $trickHandler->handleTrick($trick, $form, $this->getUser());
+                $trickHandler->writeTrick($trick, $form, $this->getUser());
 
                 $this->addFlash('success', 'Votre Trick a bien été enregistré !');
             } catch (Exception $e) {
@@ -101,7 +96,7 @@ class TrickController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             try {
                 $trickHandler = new TrickHandler($entityManager);
-                $trickHandler->handleTrick($trick, $form, $this->getUser());
+                $trickHandler->writeTrick($trick, $form, $this->getUser());
 
                 $this->addFlash('success', 'Votre Trick a bien été modifié !');
             } catch (Exception $e) {
@@ -123,21 +118,15 @@ class TrickController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        $imageHandler = new ImageHandler();
-        $images = $imageHandler->makeDataArray($imageRepository->findAll(['trick' => $trick]));
-        
         try {
-            $em =$this->getDoctrine()->getManager();
-            $em->remove($trick);
-            $em->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            $trickHandler = new TrickHandler($entityManager);
+            $trickHandler->deleteTrick($trick, $imageRepository);
 
-            $imageHandler->removeAll($images);
-            
             $this->addFlash('success', 'Le trick a bien été supprimé !');
-            return $this->redirectToRoute('home');
-        } catch (\Exception $e) {
-            $this->addFlash('danger', 'Une erreur est survenue lors de la suppression du trick.');
-            return $this->redirectToRoute('home');
+        } catch (Exception $e) {
+            $this->addFlash('danger', 'Erreur : ' . $e->getMessage());
         }
+        return $this->redirectToRoute('home');
     }
 }

@@ -13,27 +13,27 @@ class ImageService
     public const MIN_PIXEL_WIDTH = 600;
     public const MAX_WEIGHT_IN_BYTES = 1024000;
 
-    public function setNewImage($newImage, $trick)
+    public function setNewImage(string $newImage, object $trick): object
     {
         $image = new Image();
         $image->setTrick($trick)->setName($newImage);
         return $image;
     }
 
-    public function renameFile($fileToRename)
+    public function renameFile(string $fileToRename): string
     {
         $fileExtension = strtolower(pathinfo($fileToRename, PATHINFO_EXTENSION));
         return uniqid("/uploads/", true) . '.' .$fileExtension;
     }
 
-    public function moveFile($file, $renamedFile)
+    public function moveFile(string $file, string $renamedFile): void
     {
         if (!move_uploaded_file($file, self::PUBLIC_PATH . $renamedFile)) {
             throw new Exception("Impossible d'enregistrer l'image");
         }
     }
 
-    public function allowedProperties($file)
+    public function allowedProperties(array $file): bool
     {
         $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $fileSize = getimagesize($file['tmp_name']);
@@ -49,16 +49,16 @@ class ImageService
         return false;
     }
 
-    public function makeDataArray($images)
+    public function getImagesNamesList(array $images): array
     {
-        $imagesArray = [];
-        foreach($images as $images) {
-            $imagesArray[] = $images->getName();
+        $imagesNamesList = [];
+        foreach($images as $image) {
+            $imagesNamesList[] = $image->getName();
         }
-        return $imagesArray;
+        return $imagesNamesList;
     }
 
-    public function removeAll($images)
+    public function deleteLocalImages(array $images): void
     {
         foreach($images as $image) {
             unlink(self::PUBLIC_PATH . $image);

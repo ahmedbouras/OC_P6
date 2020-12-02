@@ -17,7 +17,7 @@ class MediaHandler // extends ?
         $this->imageService = new ImageService();
     }
 
-    public function handleVideo($videoLink, $trick)
+    public function addVideo($videoLink, $trick)
     {
         if (!$this->videoService->isSourceAllowed($videoLink)) {
             throw new Exception("Veuillez insérer l'url d'une vidéo Youtube ou Dailymotion");
@@ -28,7 +28,7 @@ class MediaHandler // extends ?
         return $video;
     }
 
-    public function handleImage($uploadedImage, $trick)
+    public function addImage($uploadedImage, $trick)
     {
         $renamedUploadedImage = $this->imageService->renameFile($uploadedImage->getClientOriginalName());
         $this->imageService->moveFile($uploadedImage, $renamedUploadedImage);
