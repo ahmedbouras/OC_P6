@@ -95,45 +95,19 @@ class TrickController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $form = $this->createForm(TrickType::class, $trick);
-
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $title = $form->get('title')->getData();
-            $cleanedTitle = preg_replace('/\s+/', '-', $title);
-
-            $trick->setTitle(strtolower($cleanedTitle))
-                  ->setUpdatedAt(new \DateTime());
-
-            $em = $this->getDoctrine()->getManager();
-
-            if ($videoLink = $form->get('video')->getData()) {
-                $videoHandler = new VideoHandler();
-                $embeddedLink = $videoHandler->makeLinkToEmbed($videoLink);
-                
-                $video = new Video();
-                $video->setTrick($trick)->setName($embeddedLink);
-                $em->persist($video);
-            }
-
-            if ($uploadedImage = $form->get('image')->getData()) {
-                $imageHandler = new ImageHandler();
-                $renamedUploadedImage = $imageHandler->renameFile($uploadedImage->getClientOriginalName());
-                $imageHandler->moveFile($uploadedImage, $renamedUploadedImage);
-                
-                $image = new Image();
-                $image->setTrick($trick)->setName($renamedUploadedImage);
-                $em->persist($image);
-            }
-
+            $entityManager = $this->getDoctrine()->getManager();
             try {
-                $em->flush();
+                $trickHandler = new TrickHandler($entityManager);
+                $trickHandler->handleTrick($trick, $form, $this->getUser());
 
                 $this->addFlash('success', 'Votre Trick a bien été modifié !');
-                return $this->redirectToRoute('home');
-            } catch (\Exception $e) {
-                $this->addFlash('danger', "Une erreur s'est produite durant l'enregistrement en base de donnée.");
-                return $this->redirectToRoute('home');
+            } catch (Exception $e) {
+                $this->addFlash('danger', 'Erreur : ' . $e->getMessage());
             }
+            return $this->redirectToRoute('home');
         }
 
         return $this->render('trick/update.html.twig', [

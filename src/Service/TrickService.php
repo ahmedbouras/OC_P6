@@ -9,13 +9,15 @@ class TrickService
         return preg_replace('/\s+/', '-', $titleToClean);
     }
 
-    public function setNewTrick($trick, $title, $user)
+    public function setTrick($trick, $title, $user)
     {
+        if ($trick->getCreatedAt() === null) {
+            $trick->setCreatedAt(new \DateTime())
+                  ->setDefaultImage('images/default-image.jpg')
+                  ->setUser($user);
+        }
         $trick->setTitle(strtolower($title))
-                    ->setCreatedAt(new \DateTime())
-                    ->setUpdatedAt(new \DateTime())
-                    ->setDefaultImage('images/default-image.jpg')
-                    ->setUser($user);
+              ->setUpdatedAt(new \DateTime());
         return $trick;
     }
 }

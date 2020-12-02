@@ -23,24 +23,22 @@ class TrickHandler
     {
         $title = $this->trickService->cleanUpTitle($form->get('title')->getData());
 
-        if ($trickEntity->getCreatedAt() === null) {
-            try {
-                $trick = $this->trickService->setNewTrick($trickEntity, $title, $user);
-                $this->em->persist($trick);
-    
-                if ($videoLink = $form->get('video')->getData()) {
-                    $video = $this->mediaHandler->handleVideo($videoLink, $trick);
-                    $this->em->persist($video);
-                }
-                if ($uploadedImage = $form->get('image')->getData()) {
-                    $image = $this->mediaHandler->handleImage($uploadedImage, $trick);
-                    $this->em->persist($image);
-                }
-    
-                $this->em->flush();
-            } catch (Exception $e) {
-               throw new Exception("Impossible d'enregistrer le trick dans la base de donnée.");
+        try {
+            $trick = $this->trickService->setTrick($trickEntity, $title, $user);
+            $this->em->persist($trick);
+
+            if ($videoLink = $form->get('video')->getData()) {
+                $video = $this->mediaHandler->handleVideo($videoLink, $trick);
+                $this->em->persist($video);
             }
+            if ($uploadedImage = $form->get('image')->getData()) {
+                $image = $this->mediaHandler->handleImage($uploadedImage, $trick);
+                $this->em->persist($image);
+            }
+
+            $this->em->flush();
+        } catch (Exception $e) {
+            throw new Exception("Impossible d'enregistrer le trick dans la base de donnée.");
         }
     }
 }
