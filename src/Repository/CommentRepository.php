@@ -26,7 +26,7 @@ class CommentRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('c')
             ->where('c.trick = :id')
-            ->orderBy('c.id', 'DESC')
+            ->orderBy('c.createdAt', 'DESC')
             ->setParameter('id', $id)
             ->setFirstResult( $offset )
             ->setMaxResults( $limit );

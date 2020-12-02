@@ -17,38 +17,43 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TrickController extends AbstractController
 {
+    private const OFFSET = 0;
+    private const LIMIT = 4;
+
     /**
      * @Route("/trick/{title}", name="trick_show")
      */
     public function trick(Request $request, TrickRepository $trickRepository, $title, CommentRepository $commentRepository)
     {
         $trick = $trickRepository->findOneBy(['title' => $title]);
+        $commentsToDisplay = $commentRepository->findByRangeOf(self::OFFSET, self::LIMIT, $trick->getId());
+
         $totalComments = count($commentRepository->findBy(['trick' => $trick->getId()]));
-        
-        $limit = 4;
-        $comments = $commentRepository->findByRangeOf(0, $limit, $trick->getId());
 
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);
-
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $comment->setComment($form->get('comment')->getData())
-                    ->setCreatedAt(new \DateTime)
-                    ->setTrick($trick)
-                    ->setUser($this->getUser());
+            try {
+                $comment->setCreatedAt(new \DateTime)
+                        ->setTrick($trick)
+                        ->setUser($this->getUser());
 
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($comment);
                 $em->flush();
-
+                $this->addFlash('success', 'Votre commentaire a bien été enregistré !');
+            } catch (Exception $e) {
+                $this->addFlash('danger', "Erreur : Impossible d'enregistrer votre commentaire");
+            }
             return $this->redirectToRoute('trick_show', ['title' => $trick->getTitle()]);
         }
 
         return $this->render('trick/show.html.twig', [
             'trick' => $trick,
             'commentForm' => $form->createView(),
-            'comments' => $comments,
+            'comments' => $commentsToDisplay,
             'totalComments' => $totalComments,
         ]);
     }
