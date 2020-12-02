@@ -8,10 +8,16 @@ class VideoService
 {
     public const REGEX_VIDEO = '#^(https://www.(youtube|dailymotion).com)#';
 
-    public function setNewVideo($link, $trick)
+    public function setNewVideo(string $link, object $trick): object
     {
         $video = new Video();
         $video->setTrick($trick)->setName($link);
+        return $video;
+    }
+
+    public function setExistingVideo(string $newLink, object $video): object
+    {
+        $video->setName($newLink);
         return $video;
     }
 

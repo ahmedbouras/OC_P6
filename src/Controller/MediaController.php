@@ -5,8 +5,11 @@ namespace App\Controller;
 use App\Entity\Image;
 use App\Entity\Trick;
 use App\Entity\Video;
+use App\Handler\MediaHandler;
+use App\Repository\VideoRepository;
 use App\Service\ImageHandler;
 use App\Service\VideoHandler;
+use Exception;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -43,31 +46,24 @@ class MediaController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        if ($videoLink = $_POST['newUrl']) {
-            if (preg_match(self::REGEX_VIDEO, $videoLink)) {
-                $videoHandler = new VideoHandler();
-                $embeddedLink = $videoHandler->makeLinkToEmbed($videoLink);
-                $video->setName($embeddedLink);
-            } else {
-                $this->addFlash('warning', "Veuillez insérer l'url d'une vidéo Youtube ou Dailymotion");
-                return $this->redirectToRoute('trick_update', ['id' => $trickId]);
+        $videoLink = isset($_POST['newUrl']) ? $_POST['newUrl'] : null;
+
+        if ($videoLink) {
+            try {
+                $entityManager = $this->getDoctrine()->getManager();
+                $mediaHandler = new MediaHandler();
+                $video = $mediaHandler->editVideo($videoLink, $video);
+
+                $entityManager->persist($video);
+                $entityManager->flush();
+                $this->addFlash('success', 'Vidéo modifié.');
+            } catch (Exception $e) {
+                $this->addFlash('danger', 'Impossible de modifier la vidéo.');
             }
         } else {
             $this->addFlash('warning', "Aucune vidéo n'a été chargé.");
-            return $this->redirectToRoute('trick_update', ['id' => $trickId]);
         }
-
-        try {
-            $em =$this->getDoctrine()->getManager();
-            $em->persist($video);
-            $em->flush();
-
-            $this->addFlash('success', 'Vidéo modifié.');
-            return $this->redirectToRoute('trick_update', ['id' => $trickId]);
-        } catch (\Exception $e) {
-            $this->addFlash('danger', 'Une erreur est survenue lors de la modification de la vidéo.');
-            return $this->redirectToRoute('trick_update', ['id' => $trickId]);
-        }        
+        return $this->redirectToRoute('trick_update', ['id' => $trickId]);       
     }
 
     /**
