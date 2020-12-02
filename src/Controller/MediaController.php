@@ -6,9 +6,7 @@ use App\Entity\Image;
 use App\Entity\Trick;
 use App\Entity\Video;
 use App\Handler\MediaHandler;
-use App\Repository\VideoRepository;
 use App\Service\ImageHandler;
-use App\Service\VideoHandler;
 use Exception;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -99,33 +97,21 @@ class MediaController extends AbstractController
         
         $oldImage = $image->getName();
 
-        if (!empty($_FILES['newImg']['name'])) {
-            $imageHandler = new ImageHandler();
+        if (isset($_FILES['newImg']['name']) && !empty($_FILES['newImg']['name'])) {
+            try {
+                $newImage = $_FILES['newImg'];
+                $mediaHandler = new MediaHandler();
+                $image = $mediaHandler->editImage($newImage, $image);
 
-            if($imageHandler->allowedProperties($_FILES['newImg'])) {
-                try {
-                    $renamedUploadedImage = $imageHandler->renameFile($_FILES['newImg']['name']);
-                    $imageHandler->moveFile($_FILES['newImg']['tmp_name'], $renamedUploadedImage);
-                    $image->setName($renamedUploadedImage);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($image);
+                $em->flush();
 
-                    $em = $this->getDoctrine()->getManager();
-                    $em->persist($image);
-                    $em->flush();
-        
-                    unlink(self::PUBLIC_PATH . $oldImage);
-
-                    $this->addFlash('success', 'Votre image a bien été enregistré !');
-                    return $this->redirectToRoute('trick_update', ['id' => $trickId]);
-
-                } catch (FileException $e) {
-                    $this->addFlash('danger', "Une erreur s'est produite lors de l'enregistrement de l'image.");
-                    return $this->redirectToRoute('trick_update', ['id' => $trickId]);
-                }
-            } else {
-                $this->addFlash('warning', "Veuillez respecter ces conditions : 
-                Extensions autorisées : jpeg/jpg/png. Taille minimum : 900x600px. Poids maximum : 1024ko");
-                return $this->redirectToRoute('trick_update', ['id' => $trickId]);
-            }
+                unlink(self::PUBLIC_PATH . $oldImage);
+                $this->addFlash('success', 'Votre image a bien été enregistré !');
+            } catch (Exception $e) {
+                $this->addFlash('danger', "Une erreur s'est produite lors de l'enregistrement de l'image.");
+            } 
         } else {
             $this->addFlash('warning', "Aucune image n'a été chargé.");
             return $this->redirectToRoute('trick_update', ['id' => $trickId]);

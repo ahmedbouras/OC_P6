@@ -20,6 +20,12 @@ class ImageService
         return $image;
     }
 
+    public function setExistingImage(string $newImage, object $image): object
+    {
+        $image->setName($newImage);
+        return $image;
+    }
+
     public function renameFile(string $fileToRename): string
     {
         $fileExtension = strtolower(pathinfo($fileToRename, PATHINFO_EXTENSION));
