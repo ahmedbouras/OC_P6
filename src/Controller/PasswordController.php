@@ -27,8 +27,7 @@ class PasswordController extends AbstractController
             $user = $userRepository->findOneBy(['username' => $username]);
 
             if (!$user) {
-                $this->addFlash('danger', 'Cet utilisateur n\'existe pas.');
-
+                $this->addFlash('danger', "Cet utilisateur n'existe pas.");
                 return $this->redirectToRoute('app_forgot_pass');
             }
 
@@ -39,7 +38,7 @@ class PasswordController extends AbstractController
                 $em->persist($user);
                 $em->flush();
             } catch (\Exception $e) {
-                $this->addFlash('warning', 'Erreur : ' . $e->getMessage());
+                $this->addFlash('danger', 'Impossible de générer un nouveau token de réinitialisation.');
                 return $this->redirectToRoute('app_forgot_pass');
             }
 
@@ -51,7 +50,6 @@ class PasswordController extends AbstractController
                 ->context([
                     'token' => $user->getResetToken(),
                 ]);
-
             $mailer->send($email);
 
             $this->addFlash('success', 'Cliquez sur le lien envoyé par mail pour réinitialiser votre mot de passe.');
