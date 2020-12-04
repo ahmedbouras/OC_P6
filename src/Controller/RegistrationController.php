@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
+use Exception;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,42 +28,30 @@ class RegistrationController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $uploadedAvatar = $form->get('avatar')->getData();
-            $user = $form->getData();
-            $user->setPassword($passwordEncoder->encodePassword(
-                $user,
-                $user->getPassword()
-            ));
-
-            if ($uploadedAvatar) {
-                $fileNameAvatar = uniqid("uploads/", true) . '.' .$uploadedAvatar->guessExtension();
-
+            if ($uploadedAvatar = $form->get('avatar')->getData()) {
                 try {
+                    $fileNameAvatar = uniqid("/uploads/", true) . '.' .$uploadedAvatar->guessExtension();
                     $uploadedAvatar->move(
                         $this->getParameter('images_directory'),
                         $fileNameAvatar
                     );
                 } catch (FileException $e) {
-                    $this->addFlash('danger', 'Une erreur s\'est prroduite lors du chargment du fichier : ' . $e);
+                    $this->addFlash('danger', "Une erreur s'est produite lors de l'enregistrement de votre image.");
                     return $this->redirectToRoute('app_register');
                 }
             } else {
-                $fileNameAvatar = 'uploads/avatar-default.png';
+                $fileNameAvatar = '/uploads/avatar-default.png';
             }
 
-            $user->setAvatar($fileNameAvatar);
-            $user->setActivationToken(md5(random_bytes(5)));
+            $user->setAvatar($fileNameAvatar)
+                 ->setActivationToken(md5(random_bytes(5)))
+                 ->setPassword($passwordEncoder->encodePassword(
+                $user,
+                $user->getPassword()
+            ));
 
             try {
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($user);
-                $em->flush();
-            } catch(\Exception $e) {
-                $this->addFlash('danger', 'Une erreur s\'est produite durant l\'enregistrement en base de donnée.');
-                return $this->redirectToRoute('app_register');
-            }
-
-            $email = (new TemplatedEmail())
+                $email = (new TemplatedEmail())
                 ->from('no-reply@snowtricks.com')
                 ->to($user->getEmail())
                 ->subject('Confirmation Email')
@@ -70,8 +59,20 @@ class RegistrationController extends AbstractController
                 ->context([
                     'token' => $user->getActivationToken(),
                 ]);
-
-            $mailer->send($email);
+                $mailer->send($email);
+            } catch (Exception $e) {
+                $this->addFlash('danger', "Une erreur s'est produite lors de l'envoi du mail d'activation.");
+                return $this->redirectToRoute('app_register');
+            }            
+            
+            try {
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($user);
+                $em->flush();
+            } catch(Exception $e) {
+                $this->addFlash('danger', "Impossible d'enregistrer le compte utilisateur en base de donnée.");
+                return $this->redirectToRoute('app_register');
+            }
 
             $this->addFlash('success', 'Confirmez votre compte en cliquant sur le lien envoyé par mail.');
             return $this->redirectToRoute('home');
