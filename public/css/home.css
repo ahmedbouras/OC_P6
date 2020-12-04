@@ -50,8 +50,12 @@ body {
     right: 2%;
 }
 
-.delete-this-trick:hover {
+.btn-delete:hover {
     cursor: pointer;
+}
+
+#btn-delete-confirm {
+    color: white;
 }
 
 a:link, a:hover, a:visited, a:active {

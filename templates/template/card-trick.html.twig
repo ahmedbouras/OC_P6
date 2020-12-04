@@ -15,11 +15,36 @@
         <div class="w-25">
         {% if app.user %}
                 <a href="{{ path('trick_update', {id: trick.id}) }}" class="card-link">
-                    <img height="16px" src="{{ asset('images/icones/edit.png') }}" alt="">
+                    <img height="16px" src="{{ asset('images/icones/edit.png') }}" alt="Modifier le trick">
                 </a>
-                <img height="16px" src="{{ asset('images/icones/delete.png') }}"
-                data-id={{ trick.id }} class="card-link delete-this-trick"
+
+                <!-- Button trigger modal -->
+                <img class="card-link btn-delete" data-toggle="modal" data-target="#exampleModal{{ trick.id }}"
+                height="16px" src="{{ asset('images/icones/delete.png') }}"
                 alt="Supprimer le trick">
+
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal{{ trick.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Suppression</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Êtes vous sûr de vouloir supprimer ce Trick ?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                <a id="btn-delete-confirm" class="btn btn-danger" 
+                                href={{ path('trick_delete', {id: trick.id}) }}>Supprimer</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
         {% endif %}
         </div>
     </div>

@@ -13,7 +13,6 @@ $("#load-more").click(function () {
             url: "/more-comment",
             data: {offset:offset, trick:trick},
             success: function (response) {
-                console.log(response);
                 $(".comment-row:last").after(response).show();
 
                 var rowno = offset + itemToDisplay;
