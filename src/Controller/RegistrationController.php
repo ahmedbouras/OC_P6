@@ -94,14 +94,15 @@ class RegistrationController extends AbstractController
             throw $this->createNotFoundException('Utilisateur inconnu');
         }
 
-        $user->setActivationToken(null);
-
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($user);
-        $em->flush();
-
-        $this->addFlash('success', 'Votre compte est maintenant activé !');
-        
+        try {
+            $user->setActivationToken(null);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            $em->flush();
+            $this->addFlash('success', 'Votre compte est maintenant activé !');
+        } catch (Exception $e) {
+            $this->addFlash('danger', "Erreur : Impossible d'activer votre compte pour le moment");
+        }
         return $this->redirectToRoute('app_login');
     }
 }
