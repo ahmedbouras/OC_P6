@@ -26,7 +26,12 @@ class TrickController extends AbstractController
     public function trick(Request $request, TrickRepository $trickRepository, $title, CommentRepository $commentRepository)
     {
         $trick = $trickRepository->findOneBy(['title' => $title]);
-        $commentsToDisplay = $commentRepository->findByRangeOf(self::OFFSET, self::LIMIT, $trick->getId());
+        $commentsToDisplay = $commentRepository->findBy(
+            ['trick' => $trick->getId()],
+            ['createdAt' => 'DESC'],
+            self::LIMIT,
+            self::OFFSET
+        );
 
         $totalComments = count($commentRepository->findBy(['trick' => $trick->getId()]));
 
