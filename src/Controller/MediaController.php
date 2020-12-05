@@ -5,8 +5,9 @@ namespace App\Controller;
 use App\Entity\Image;
 use App\Entity\Trick;
 use App\Entity\Video;
+use App\Handler\MediaHandler;
 use App\Service\ImageHandler;
-use App\Service\VideoHandler;
+use Exception;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -43,31 +44,24 @@ class MediaController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        if ($videoLink = $_POST['newUrl']) {
-            if (preg_match(self::REGEX_VIDEO, $videoLink)) {
-                $videoHandler = new VideoHandler();
-                $embeddedLink = $videoHandler->makeLinkToEmbed($videoLink);
-                $video->setName($embeddedLink);
-            } else {
-                $this->addFlash('warning', "Veuillez insérer l'url d'une vidéo Youtube ou Dailymotion");
-                return $this->redirectToRoute('trick_update', ['id' => $trickId]);
+        $videoLink = isset($_POST['newUrl']) ? $_POST['newUrl'] : null;
+
+        if ($videoLink) {
+            try {
+                $entityManager = $this->getDoctrine()->getManager();
+                $mediaHandler = new MediaHandler();
+                $video = $mediaHandler->editVideo($videoLink, $video);
+
+                $entityManager->persist($video);
+                $entityManager->flush();
+                $this->addFlash('success', 'Vidéo modifié.');
+            } catch (Exception $e) {
+                $this->addFlash('danger', 'Impossible de modifier la vidéo.');
             }
         } else {
             $this->addFlash('warning', "Aucune vidéo n'a été chargé.");
-            return $this->redirectToRoute('trick_update', ['id' => $trickId]);
         }
-
-        try {
-            $em =$this->getDoctrine()->getManager();
-            $em->persist($video);
-            $em->flush();
-
-            $this->addFlash('success', 'Vidéo modifié.');
-            return $this->redirectToRoute('trick_update', ['id' => $trickId]);
-        } catch (\Exception $e) {
-            $this->addFlash('danger', 'Une erreur est survenue lors de la modification de la vidéo.');
-            return $this->redirectToRoute('trick_update', ['id' => $trickId]);
-        }        
+        return $this->redirectToRoute('trick_update', ['id' => $trickId]);       
     }
 
     /**
@@ -103,37 +97,25 @@ class MediaController extends AbstractController
         
         $oldImage = $image->getName();
 
-        if (!empty($_FILES['newImg']['name'])) {
-            $imageHandler = new ImageHandler();
+        if (isset($_FILES['newImg']['name']) && !empty($_FILES['newImg']['name'])) {
+            try {
+                $newImage = $_FILES['newImg'];
+                $mediaHandler = new MediaHandler();
+                $updatedimage = $mediaHandler->editImage($newImage, $image);
 
-            if($imageHandler->allowedProperties($_FILES['newImg'])) {
-                try {
-                    $renamedUploadedImage = $imageHandler->renameFile($_FILES['newImg']['name']);
-                    $imageHandler->moveFile($_FILES['newImg']['tmp_name'], $renamedUploadedImage);
-                    $image->setName($renamedUploadedImage);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($updatedimage);
+                $em->flush();
 
-                    $em = $this->getDoctrine()->getManager();
-                    $em->persist($image);
-                    $em->flush();
-        
-                    unlink(self::PUBLIC_PATH . $oldImage);
-
-                    $this->addFlash('success', 'Votre image a bien été enregistré !');
-                    return $this->redirectToRoute('trick_update', ['id' => $trickId]);
-
-                } catch (FileException $e) {
-                    $this->addFlash('danger', "Une erreur s'est produite lors de l'enregistrement de l'image.");
-                    return $this->redirectToRoute('trick_update', ['id' => $trickId]);
-                }
-            } else {
-                $this->addFlash('warning', "Veuillez respecter ces conditions : 
-                Extensions autorisées : jpeg/jpg/png. Taille minimum : 900x600px. Poids maximum : 1024ko");
-                return $this->redirectToRoute('trick_update', ['id' => $trickId]);
-            }
+                unlink(self::PUBLIC_PATH . $oldImage);
+                $this->addFlash('success', 'Votre image a bien été enregistré !');
+            } catch (Exception $e) {
+                $this->addFlash('danger', "Une erreur s'est produite lors de l'enregistrement de l'image.");
+            } 
         } else {
             $this->addFlash('warning', "Aucune image n'a été chargé.");
-            return $this->redirectToRoute('trick_update', ['id' => $trickId]);
         }
+        return $this->redirectToRoute('trick_update', ['id' => $trickId]);
     }
 
     /**
@@ -144,37 +126,26 @@ class MediaController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $oldImage = $trick->getMainImage() !== null ? $trick->getMainImage() : null;
-        if (!empty($_FILES['mainImage']['name'])) {
-            $imageHandler = new ImageHandler();
-
-            if($imageHandler->allowedProperties($_FILES['mainImage'])) {
-                try {
-                    $renamedUploadedImage = $imageHandler->renameFile($_FILES['mainImage']['name']);
-                    $imageHandler->moveFile($_FILES['mainImage']['tmp_name'], $renamedUploadedImage);
-                    $trick->setMainImage($renamedUploadedImage);
-
-                    $em = $this->getDoctrine()->getManager();
-                    $em->persist($trick);
-                    $em->flush();
         
-                    $oldImage ? unlink(self::PUBLIC_PATH . $oldImage): null;
+        if (isset($_FILES['mainImage']['name']) && !empty($_FILES['mainImage']['name'])) {
+            try {
+                $newImage = $_FILES['mainImage'];
+                $mediaHandler = new MediaHandler();
+                $image = $mediaHandler->editMainImage($newImage, $trick);
 
-                    $this->addFlash('success', 'Votre image a bien été enregistré !');
-                    return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($image);
+                $em->flush();
 
-                } catch (FileException $e) {
-                    $this->addFlash('danger', "Une erreur s'est produite lors de l'enregistrement de l'image.");
-                    return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
-                }
-            } else {
-                $this->addFlash('warning', "Veuillez respecter ces conditions : 
-                Extensions autorisées : jpeg/jpg/png. Taille minimum : 900x600px. Poids maximum : 1024ko");
-                return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
-            }
+                $oldImage ? unlink(self::PUBLIC_PATH . $oldImage): null;
+                $this->addFlash('success', 'Votre image a bien été enregistré !');
+            } catch (Exception $e) {
+                $this->addFlash('danger', "Une erreur s'est produite lors de l'enregistrement de l'image principale.");
+            } 
         } else {
             $this->addFlash('warning', "Aucune image n'a été chargé.");
-            return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
         }
+        return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
     }
 
     /**
@@ -196,14 +167,13 @@ class MediaController extends AbstractController
                 unlink(self::PUBLIC_PATH . $oldImage);
     
                 $this->addFlash('success', "L'image principale a bien été supprimé !");
-                return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
             } catch (\Exception $e) {
-                $this->addFlash('danger', "Une erreur s'est produite durant la suppression de l'image.");
-                return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+                $this->addFlash('danger', "Une erreur s'est produite lors de la suppression de l'image principale.");
             }
         } else {
             $this->addFlash('warning', "Aucune image principale à supprimer.");
-            return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
+            
         }
+        return $this->redirectToRoute('trick_update', ['id' => $trick->getId()]);
     }
 }

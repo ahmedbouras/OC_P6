@@ -2,55 +2,58 @@
 
 namespace App\Controller;
 
-use App\Entity\Image;
+use Exception;
 use App\Entity\Trick;
-use App\Entity\Video;
 use App\Entity\Comment;
 use App\Form\TrickType;
 use App\Form\CommentType;
-use App\Service\ImageHandler;
-use App\Service\VideoHandler;
+use App\Handler\TrickHandler;
+use App\Repository\ImageRepository;
 use App\Repository\TrickRepository;
 use App\Repository\CommentRepository;
-use App\Repository\ImageRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TrickController extends AbstractController
 {
+    private const OFFSET = 0;
+    private const LIMIT = 4;
+
     /**
      * @Route("/trick/{title}", name="trick_show")
      */
     public function trick(Request $request, TrickRepository $trickRepository, $title, CommentRepository $commentRepository)
     {
         $trick = $trickRepository->findOneBy(['title' => $title]);
+        $commentsToDisplay = $commentRepository->findByRangeOf(self::OFFSET, self::LIMIT, $trick->getId());
+
         $totalComments = count($commentRepository->findBy(['trick' => $trick->getId()]));
-        
-        $limit = 4;
-        $comments = $commentRepository->findByRangeOf(0, $limit, $trick->getId());
 
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);
-
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $comment->setComment($form->get('comment')->getData())
-                    ->setCreatedAt(new \DateTime)
-                    ->setTrick($trick)
-                    ->setUser($this->getUser());
+            try {
+                $comment->setCreatedAt(new \DateTime)
+                        ->setTrick($trick)
+                        ->setUser($this->getUser());
 
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($comment);
                 $em->flush();
-
+                $this->addFlash('success', 'Votre commentaire a bien été enregistré !');
+            } catch (Exception $e) {
+                $this->addFlash('danger', "Erreur : Impossible d'enregistrer votre commentaire");
+            }
             return $this->redirectToRoute('trick_show', ['title' => $trick->getTitle()]);
         }
 
         return $this->render('trick/show.html.twig', [
             'trick' => $trick,
             'commentForm' => $form->createView(),
-            'comments' => $comments,
+            'comments' => $commentsToDisplay,
             'totalComments' => $totalComments,
         ]);
     }
@@ -63,52 +66,20 @@ class TrickController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $trick = new Trick();
-
         $form = $this->createForm(TrickType::class, $trick);
-
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
             try {
-                $title = $form->get('title')->getData();
-                $cleanedTitle = preg_replace('/\s+/', '-', $title);
-
-                $trick->setTitle(strtolower($cleanedTitle))
-                    ->setCreatedAt(new \DateTime())
-                    ->setUpdatedAt(new \DateTime())
-                    ->setDefaultImage('images/default-image.jpg')
-                    ->setUser($this->getUser());
-
-                $em = $this->getDoctrine()->getManager();
-
-                if ($videoLink = $form->get('video')->getData()) {
-                    $videoHandler = new VideoHandler();
-                    $embeddedLink = $videoHandler->makeLinkToEmbed($videoLink);
-                    
-                    $video = new Video();
-                    $video->setTrick($trick)->setName($embeddedLink);
-                    $em->persist($video);
-                }
-
-                if ($uploadedImage = $form->get('image')->getData()) {
-                    $imageHandler = new ImageHandler();
-                    $renamedUploadedImage = $imageHandler->renameFile($uploadedImage->getClientOriginalName());
-                    $imageHandler->moveFile($uploadedImage, $renamedUploadedImage);
-    
-                    $image = new Image();
-                    $image->setTrick($trick)->setName($renamedUploadedImage);
-                    $em->persist($image);
-                }
-
-                $em->persist($trick);
-                $em->flush();
+                $trickHandler = new TrickHandler($entityManager);
+                $trickHandler->writeTrick($trick, $form, $this->getUser());
 
                 $this->addFlash('success', 'Votre Trick a bien été enregistré !');
-                return $this->redirectToRoute('home');
-
-            } catch (\Exception $e) {
-                $this->addFlash('danger', "Une erreur est survenue lors de l'enregistrement en base de donnée.");
-                return $this->redirectToRoute('home');
+            } catch (Exception $e) {
+                $this->addFlash('danger', 'Erreur : ' . $e->getMessage());
             }
+            return $this->redirectToRoute('home');
         }
 
         return $this->render('trick/create.html.twig', [
@@ -124,45 +95,19 @@ class TrickController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $form = $this->createForm(TrickType::class, $trick);
-
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $title = $form->get('title')->getData();
-            $cleanedTitle = preg_replace('/\s+/', '-', $title);
-
-            $trick->setTitle(strtolower($cleanedTitle))
-                  ->setUpdatedAt(new \DateTime());
-
-            $em = $this->getDoctrine()->getManager();
-
-            if ($videoLink = $form->get('video')->getData()) {
-                $videoHandler = new VideoHandler();
-                $embeddedLink = $videoHandler->makeLinkToEmbed($videoLink);
-                
-                $video = new Video();
-                $video->setTrick($trick)->setName($embeddedLink);
-                $em->persist($video);
-            }
-
-            if ($uploadedImage = $form->get('image')->getData()) {
-                $imageHandler = new ImageHandler();
-                $renamedUploadedImage = $imageHandler->renameFile($uploadedImage->getClientOriginalName());
-                $imageHandler->moveFile($uploadedImage, $renamedUploadedImage);
-                
-                $image = new Image();
-                $image->setTrick($trick)->setName($renamedUploadedImage);
-                $em->persist($image);
-            }
-
+            $entityManager = $this->getDoctrine()->getManager();
             try {
-                $em->flush();
+                $trickHandler = new TrickHandler($entityManager);
+                $trickHandler->writeTrick($trick, $form, $this->getUser());
 
                 $this->addFlash('success', 'Votre Trick a bien été modifié !');
-                return $this->redirectToRoute('home');
-            } catch (\Exception $e) {
-                $this->addFlash('danger', "Une erreur s'est produite durant l'enregistrement en base de donnée.");
-                return $this->redirectToRoute('home');
+            } catch (Exception $e) {
+                $this->addFlash('danger', 'Erreur : ' . $e->getMessage());
             }
+            return $this->redirectToRoute('home');
         }
 
         return $this->render('trick/update.html.twig', [
@@ -178,21 +123,15 @@ class TrickController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        $imageHandler = new ImageHandler();
-        $images = $imageHandler->makeDataArray($imageRepository->findAll(['trick' => $trick]));
-        
         try {
-            $em =$this->getDoctrine()->getManager();
-            $em->remove($trick);
-            $em->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            $trickHandler = new TrickHandler($entityManager);
+            $trickHandler->deleteTrick($trick, $imageRepository);
 
-            $imageHandler->removeAll($images);
-            
             $this->addFlash('success', 'Le trick a bien été supprimé !');
-            return $this->redirectToRoute('home');
-        } catch (\Exception $e) {
-            $this->addFlash('danger', 'Une erreur est survenue lors de la suppression du trick.');
-            return $this->redirectToRoute('home');
+        } catch (Exception $e) {
+            $this->addFlash('danger', 'Erreur : ' . $e->getMessage());
         }
+        return $this->redirectToRoute('home');
     }
 }

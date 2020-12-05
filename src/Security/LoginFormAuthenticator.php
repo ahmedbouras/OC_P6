@@ -74,11 +74,18 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             throw new CustomUserMessageAuthenticationException('Utilisateur inconnu.');
         }
 
+        if ($user->getActivationToken()) {
+            throw new CustomUserMessageAuthenticationException("Veuillez d'abord activer votre compte.");
+        }
+
         return $user;
     }
 
     public function checkCredentials($credentials, UserInterface $user)
     {
+        if (!$this->passwordEncoder->isPasswordValid($user, $credentials['password'])) {
+            throw new CustomUserMessageAuthenticationException("Mot de passe incorrect");
+        }
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
     }
 

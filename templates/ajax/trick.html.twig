@@ -1,32 +1,3 @@
 {% for trick in tricks %}
-    <div class="card col-2">
-        <a href="{{ path('trick_show', {title: trick.title}) }}">
-        {% if trick.mainImage != null %}
-            <img style="height: 200px; width: 100%; display: block;" src="{{ asset(trick.mainImage)}}" alt="Card image">
-        {% elseif trick.images|length > 0 %}
-            <img style="height: 200px; width: 100%; display: block;" src="{{ asset(trick.images[0].name )}}" alt="Card image">
-        {% else %}
-            <img style="height: 200px; width: 100%; display: block;" src="{{ asset('images/default-image.jpg')}}" alt="Card image">
-        {% endif %}
-        </a>
-        <div class="card-body row">
-            <a class="w-75" href="{{ path('trick_show', {title: trick.title}) }}">
-                <h3>{{ trick.title|replace({ '-': ' ', })|capitalize }}</h3>
-            </a>
-            <div class="w-25">
-            {% if app.user %}
-                    <a href="{{ path('trick_update', {id: trick.id}) }}" class="card-link">
-                        <img height="16px" src="{{ asset('images/icones/edit.png') }}" alt="">
-                    </a>
-                    <img height="16px" src="{{ asset('images/icones/delete.png') }}"
-                    data-id={{ trick.id }} class="card-link delete-this-trick"
-                    alt="Supprimer le trick">
-            {% endif %}
-            </div>
-        </div>
-    </div>
+    {% include "template/card-trick.html.twig" %}
 {% endfor %}
-
-{% block script %}
-    <script src="{{ asset('js/home.js') }}"></script>
-{% endblock %}

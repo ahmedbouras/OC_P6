@@ -2,13 +2,29 @@
 
 namespace App\Service;
 
-class ImageHandler
+use Exception;
+use App\Entity\Image;
+
+class ImageService
 {
     public const PUBLIC_PATH = 'C:/wamp64/www/oc/OC_P6/public';
     public const ALLOWED_EXTENSION = ['jpeg', 'jpg', 'png'];
     public const MIN_PIXEL_HEIGHT = 900;
     public const MIN_PIXEL_WIDTH = 600;
     public const MAX_WEIGHT_IN_BYTES = 1024000;
+
+    public function setNewImage(string $newImage, object $trick): object
+    {
+        $image = new Image();
+        $image->setTrick($trick)->setName($newImage);
+        return $image;
+    }
+
+    public function setExistingImage(string $newImage, object $image): object
+    {
+        $image->setName($newImage);
+        return $image;
+    }
 
     public function renameFile(string $fileToRename): string
     {
@@ -18,7 +34,9 @@ class ImageHandler
 
     public function moveFile(string $file, string $renamedFile): void
     {
-        move_uploaded_file($file, self::PUBLIC_PATH . $renamedFile);
+        if (!move_uploaded_file($file, self::PUBLIC_PATH . $renamedFile)) {
+            throw new Exception("Impossible d'enregistrer l'image");
+        }
     }
 
     public function allowedProperties(array $file): bool
@@ -37,16 +55,16 @@ class ImageHandler
         return false;
     }
 
-    public function makeDataArray($images): array
+    public function getImagesNamesList(array $images): array
     {
-        $imagesArray = [];
-        foreach($images as $images) {
-            $imagesArray[] = $images->getName();
+        $imagesNamesList = [];
+        foreach($images as $image) {
+            $imagesNamesList[] = $image->getName();
         }
-        return $imagesArray;
+        return $imagesNamesList;
     }
 
-    public function removeAll(array $images): void
+    public function deleteLocalImages(array $images): void
     {
         foreach($images as $image) {
             unlink(self::PUBLIC_PATH . $image);
