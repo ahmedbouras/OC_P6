@@ -1,6 +1,6 @@
 # OC_P6
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/e7b8e855f0ea4ede9846d69952275502)](https://www.codacy.com/gh/ahmedbrs/OC_P6/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ahmedbrs/OC_P6&amp;utm_campaign=Badge_Grade)<a href="https://codeclimate.com/github/ahmedbrs/OC_P6/maintainability"><img src="https://api.codeclimate.com/v1/badges/b1b407fca0e65aa9f37d/maintainability" /></a>
+<a href="https://codeclimate.com/github/ahmedbrs/OC_P6/maintainability"><img src="https://api.codeclimate.com/v1/badges/b1b407fca0e65aa9f37d/maintainability" /></a>
 
 ## Who made it ?
 
