@@ -45,10 +45,12 @@
                     <p>{{ form_errors(trickEditForm.title) }}</p>
                 
                 </div>
-
-                <div class="row bloc-see-medias justify-content-center pt-4 pb-4">
-                    <div class="btn btn-secondary see-medias">Afficher les médias</div>
-                </div>
+                
+                {% if (trick.images is not empty) or (trick.videos is not empty) %}
+                    <div class="row bloc-see-medias justify-content-center pt-4 pb-4">
+                        <div class="btn btn-secondary see-medias">Afficher les médias</div>
+                    </div>
+                {% endif %}
 
                 <div class="row bloc-img-vids mt-2">
                     <div class="col-12 d-flex flex-wrap justify-content-center">
