@@ -18,7 +18,12 @@ class AjaxController extends AbstractController
     public function moreTrick(TrickRepository $trickRepository)
     {
         $offset = isset($_POST['offset']) ? $_POST['offset'] : 0;
-        $tricks = $trickRepository->findByRangeOf($offset, self::TRICK_LIMIT);
+        $tricks = $trickRepository->findBy(
+            [],
+            ['createdAt' => 'DESC'],
+            self::TRICK_LIMIT,
+            $offset
+        );
         
         return $this->render('ajax/trick.html.twig', [
             'tricks' => $tricks,
@@ -38,7 +43,12 @@ class AjaxController extends AbstractController
             $this->redirectToRoute('home');
         }
 
-        $comments = $commentRepository->findByRangeOf($offset, self::COMMENT_LIMIT, $id);
+        $comments = $commentRepository->findBy(
+            ['trick' => $id],
+            ['createdAt' => 'DESC'],
+            self::COMMENT_LIMIT,
+            $offset
+        );
         
         return $this->render('ajax/comment.html.twig', [
             'comments' => $comments,

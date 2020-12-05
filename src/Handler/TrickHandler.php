@@ -48,7 +48,7 @@ class TrickHandler
 
     public function deleteTrick($trick, $imageRepository)
     {
-        $images = $this->imageService->getImagesNamesList($imageRepository->findAll(['trick' => $trick]));
+        $images = $this->imageService->getImagesNamesList($imageRepository->findBy(['trick' => $trick->getId()]));
 
         try {
             $this->em->remove($trick);
